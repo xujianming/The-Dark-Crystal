@@ -10,12 +10,12 @@ ConfigurationManager::ConfigurationManager()
 {
 }
 
-ConfigurationManager* ConfigurationManager::GetInstance()
+ConfigurationManager* ConfigurationManager::getInstance()
 {
     return mInstance.get();
 }
 
-bool ConfigurationManager::LoadConfig()
+bool ConfigurationManager::loadConfig()
 {
     QFile config_file(CONFIG_FILE);
     QDomDocument doc;
@@ -25,7 +25,7 @@ bool ConfigurationManager::LoadConfig()
     {
         Logger::Get().Info("The configuration file doesn't exist. Trying to create a new one.");
         
-        if(!SaveConfig())
+        if(!saveConfig())
         {
             Logger::Get().Error("Failed to open the configuration file.");
 
@@ -52,7 +52,7 @@ bool ConfigurationManager::LoadConfig()
 
             if(tag_name == KEY_SETTINGS)
             {
-                _LoadKeySettings(config_node);
+                __loadKeySettings(config_node);
             }
         }
     }
@@ -66,17 +66,17 @@ bool ConfigurationManager::LoadConfig()
     return true;
 }
 
-KeySettings ConfigurationManager::GetKeySettings() const
+KeySettings ConfigurationManager::getKeySettings() const
 {
     return mKeySettings;
 }
 
-void ConfigurationManager::SetKeySettings(KeySettings key_settings)
+void ConfigurationManager::setKeySettings(KeySettings key_settings)
 {
     mKeySettings = key_settings;
 }
 
-bool ConfigurationManager::SaveConfig() const
+bool ConfigurationManager::saveConfig() const
 {
     QFile config_file(CONFIG_FILE);
     QDomDocument doc;
@@ -94,7 +94,7 @@ bool ConfigurationManager::SaveConfig() const
 
     // Only saves the key settings for now.
     // TODO: Add other saving stuff here.
-    root.appendChild(_SaveKeySettings(doc));
+    root.appendChild(__saveKeySettings(doc));
 
     // Save it to the file.
     QTextStream out(&config_file);
@@ -106,7 +106,7 @@ bool ConfigurationManager::SaveConfig() const
     return true;
 }
 
-void ConfigurationManager::_LoadKeySettings(const QDomElement& element)
+void ConfigurationManager::__loadKeySettings(const QDomElement& element)
 {
     for(auto key_node = element.firstChildElement() ; !key_node.isNull() ; key_node = key_node.nextSiblingElement())
     {
@@ -117,7 +117,7 @@ void ConfigurationManager::_LoadKeySettings(const QDomElement& element)
     }
 }
 
-QDomElement ConfigurationManager::_SaveKeySettings(QDomDocument& doc) const
+QDomElement ConfigurationManager::__saveKeySettings(QDomDocument& doc) const
 {
     auto key_settings = doc.createElement(KEY_SETTINGS);
 

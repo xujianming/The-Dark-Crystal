@@ -10,27 +10,27 @@ KeySettings::KeySettings()
     mKeyMap[ACTIVATE] = pair<QString, InputManager::InputCode>("Activate", InputManager::KC_E);
 }
 
-void KeySettings::SetKey(Function function, InputManager::InputCode key)
+void KeySettings::setKey(Function function, InputManager::InputCode key)
 {
     mKeyMap[function].second = key;
 }
 
-InputManager::InputCode KeySettings::GetKey(Function function) const
+InputManager::InputCode KeySettings::getKey(Function function) const
 {
     return mKeyMap.at(function).second;
 }
 
-QString KeySettings::GetName(Function function) const
+QString KeySettings::getName(Function function) const
 {
     return mKeyMap.at(function).first;
 }
 
-KeySettings::Function KeySettings::Begin() const
+KeySettings::Function KeySettings::begin() const
 {
     return FORWARD;
 }
 
-KeySettings::Function KeySettings::End() const
+KeySettings::Function KeySettings::end() const
 {
     return ACTIVATE;
 }
