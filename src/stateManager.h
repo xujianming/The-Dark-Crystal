@@ -22,9 +22,7 @@ enum StateName {
 class NewStateManager {
 public:
 	void push(StateName stateName);  
-	void pop(uint16_t count = 1);
-	dt::State * getCurrentState();
-	bool shiftStates();
+	void pop(uint16_t count = 1);	
 	static NewStateManager & getInstance(); 
 //for singleton
 private:
