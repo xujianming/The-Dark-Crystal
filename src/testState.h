@@ -3,7 +3,7 @@
 #include <Scene/State.hpp>
 class TestState: public dt::State{	
 public:
-	void OnInitialize(); 
-	void UpdateStateFrame(double simulation_frame_time);
+	virtual void onInitialize(); 
+	virtual void updateStateFrame(double simulation_frame_time);
 };
 #endif

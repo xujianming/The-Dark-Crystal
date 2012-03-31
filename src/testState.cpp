@@ -1,8 +1,8 @@
 #include "testState.h"
 
 void
-TestState::OnInitialize() {
+TestState::onInitialize() {
 }
 void 
-TestState::UpdateStateFrame(double simulation_frame_time){
+TestState::updateStateFrame(double simulation_frame_time){
 }
