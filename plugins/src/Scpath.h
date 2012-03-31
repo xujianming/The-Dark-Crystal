@@ -50,6 +50,7 @@ public:
 	bool _setPosition(OgitorsPropertyBase* property, const Ogre::Vector3& position);
 	bool _setPath(OgitorsPropertyBase* property, const Ogre::String& path);
     bool _setEnabled(OgitorsPropertyBase* property, const bool& is_enabled);
+    bool _setUpdateCallEnabled(OgitorsPropertyBase* property, const bool& is_update_call_enabled);
 
 protected:
 	ScpathEditor(CBaseEditorFactory *factory);
@@ -60,6 +61,7 @@ protected:
     OgitorsProperty<Ogre::Vector3>     *mPosition;
 	OgitorsProperty<Ogre::String>      *mPath;
     OgitorsProperty<bool>              *mIsEnabled;
+    OgitorsProperty<bool>              *mIsUpdateCallEnabled;
 };
 
 

@@ -13,6 +13,7 @@ TiXmlElement* ScpathEditor::exportDotScene(TiXmlElement *pParent) {
     pScpath->SetAttribute("id", Ogre::StringConverter::toString(mObjectID->get()).c_str());
     pScpath->SetAttribute("enabled", Ogre::StringConverter::toString(mIsEnabled->get()).c_str());
 	pScpath->SetAttribute("path", mPath->get().c_str());
+    pScpath->SetAttribute("updateCallEnabled", Ogre::StringConverter::toString(mIsUpdateCallEnabled->get()).c_str());
     // object position
     TiXmlElement *pScpathPosition = pScpath->InsertEndChild(TiXmlElement("position"))->ToElement();
     pScpathPosition->SetAttribute("x", Ogre::StringConverter::toString(mPosition->get().x).c_str());
@@ -89,6 +90,10 @@ bool ScpathEditor::_setEnabled(OgitorsPropertyBase* property, const bool& is_ena
     return true;
 }
 
+bool ScpathEditor::_setUpdateCallEnabled(OgitorsPropertyBase* property, const bool& is_update_call_enabled) {
+    return true;
+}
+
 void ScpathEditor::showBoundingBox(bool bShow) {
     if (!mBoxParentNode) {
         createBoundingBox();
@@ -151,6 +156,7 @@ void ScpathEditor::createProperties(OgitorsPropertyValueMap &params) {
     PROPERTY_PTR(mIsEnabled, "enabled", bool, true, 0, SETTER(bool, ScpathEditor, _setEnabled));
     PROPERTY_PTR(mPosition , "position" , Ogre::Vector3, Ogre::Vector3::ZERO, 0, SETTER(Ogre::Vector3, ScpathEditor, _setPosition));
 	PROPERTY_PTR(mPath, "path", Ogre::String, "", 0, SETTER(Ogre::String, ScpathEditor, _setPath));
+    PROPERTY_PTR(mIsEnabled, "update_call_enabled", bool, false, 0, SETTER(bool, ScpathEditor, _setUpdateCallEnabled));
     mProperties.initValueMap(params);
 }
 
@@ -161,6 +167,7 @@ ScpathEditor::ScpathEditor(CBaseEditorFactory *factory): CBaseEditor(factory) {
     mPosition = 0;
     mPath = 0;
     mIsEnabled = 0;
+    mIsUpdateCallEnabled = 0;
 }
 
 ScpathEditor::~ScpathEditor() {
@@ -180,6 +187,7 @@ ScpathEditorFactory::ScpathEditorFactory(OgitorsView *view) : CBaseEditorFactory
     AddPropertyDefinition("enabled", "Enabled", "If this component is enabled.", PROP_BOOL);
     AddPropertyDefinition("position","Position", "The position of the object.", PROP_VECTOR3);
 	AddPropertyDefinition("path", "Script Path", "The path of the script", PROP_STRING);
+    AddPropertyDefinition("update_call_enabled", "Update_Call_Enabled", "If the onUpdate function which will be called every frame of this script is enabled.", PROP_BOOL);
 }
 
 CBaseEditorFactory *ScpathEditorFactory::duplicate(OgitorsView *view) {
