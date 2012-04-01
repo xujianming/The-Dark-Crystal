@@ -156,7 +156,7 @@ void ScpathEditor::createProperties(OgitorsPropertyValueMap &params) {
     PROPERTY_PTR(mIsEnabled, "enabled", bool, true, 0, SETTER(bool, ScpathEditor, _setEnabled));
     PROPERTY_PTR(mPosition , "position" , Ogre::Vector3, Ogre::Vector3::ZERO, 0, SETTER(Ogre::Vector3, ScpathEditor, _setPosition));
 	PROPERTY_PTR(mPath, "path", Ogre::String, "", 0, SETTER(Ogre::String, ScpathEditor, _setPath));
-    PROPERTY_PTR(mIsEnabled, "update_call_enabled", bool, false, 0, SETTER(bool, ScpathEditor, _setUpdateCallEnabled));
+    PROPERTY_PTR(mIsUpdateCallEnabled, "update_call_enabled", bool, false, 0, SETTER(bool, ScpathEditor, _setUpdateCallEnabled));
     mProperties.initValueMap(params);
 }
 
