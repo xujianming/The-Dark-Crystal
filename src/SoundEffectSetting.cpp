@@ -2,7 +2,7 @@
 
 SoundEffectSetting::SoundEffectSetting()
 {
-	mSoundEffect = 0;
+	mSoundEffect = 20;
 }
 
 unsigned SoundEffectSetting::getSoundEffect() const

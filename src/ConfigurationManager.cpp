@@ -54,25 +54,29 @@ bool ConfigurationManager::loadConfig()
             {
                 __loadKeySettings(config_node);
             }
-			else if (tag_name == VOLUME_SETTING)
+			else if (tag_name == MUSIC_SETTING)
 			{
-				_loadVolumeSetting(config_node);
+				_loadMouseSetting(config_node);
 			}
-			else if (tag_name == RESOLUTION_RATIO_SETTING)
+			else if (tag_name == SCREEN_SETTING)
 			{
-				_loadResolutionRatioSetting(config_node);
+				_loadSreenSetting(config_node);
 			}
-			else if (tag_name == FLIP_Y_SETTING)
+			else if (tag_name == Y_INVERTED_SETTING)
 			{
-				_loadFlipYSetting(config_node);
+				_loadYInvertedSetting(config_node);
 			}
 			else if(tag_name == SOUND_EFFECT_SETTING)
 			{
 				_loadSoundEffectSetting(config_node);
 			}
-			else if (tag_name == SOUND_EFFECT_SETTING)
+			else if (tag_name == SENSITIVITY_SETTING)
 			{
 				_loadSensitivitySetting(config_node);
+			}
+			else if (tag_name == MOUSE_SETTING)
+			{
+				_loadMouseSetting(config_node);
 			}
         }
     }
@@ -105,11 +109,12 @@ bool ConfigurationManager::saveConfig() const
 	// Only saves the key settings for now.
 	// TODO: Add other saving stuff here.
 	root.appendChild(__saveKeySettings(doc));
-	root.appendChild(_saveVolumeSetting(doc));
-	root.appendChild(_saveResolutionRatioSetting(doc));
-	root.appendChild(_saveFlipYSetting(doc));
+	root.appendChild(_saveMusicSetting(doc));
+	root.appendChild(_saveScreenSetting(doc));
+	root.appendChild(_saveYInvertedSetting(doc));
 	root.appendChild(_saveSoundEffectSetting(doc));
 	root.appendChild(_saveSensitivitySetting(doc));
+	root.appendChild(_saveMouseSetting(doc));
 
 	// Save it to the file.
 	QTextStream out(&config_file);
@@ -131,34 +136,24 @@ void ConfigurationManager::setKeySettings(KeySettings key_settings)
     mKeySettings = key_settings;
 }
 
-VolumeSetting ConfigurationManager::getVolumeSetting() const
+MusicSetting ConfigurationManager::getMusicSetting() const
 {
-	return mVolumeSetting;
+	return mMusicSetting;
 }
 
-void ConfigurationManager::setVolumeSetting(VolumeSetting volume_setting)
+void ConfigurationManager::setMusicSetting(MusicSetting Music_setting)
 {
-	mVolumeSetting = volume_setting;
+	mMusicSetting = Music_setting;
 }
 
-ResolutionRatioSetting ConfigurationManager::getResolutionRatioSetting() const
+YInvertedSetting ConfigurationManager::getYInvertedSetting() const
 {
-	return mResolutionRatioSetting;
+	return mYInvertedSetting;
 }
 
-void ConfigurationManager::setResolutionRatioSetting(ResolutionRatioSetting resolution_ratio_setting)
+void ConfigurationManager::setYInvertedSetting(YInvertedSetting set_y_inverted_setting)
 {
-	mResolutionRatioSetting = resolution_ratio_setting;
-}
-
-FlipYSetting ConfigurationManager::getFlipYSetting() const
-{
-	return mFlipYSetting;
-}
-
-void ConfigurationManager::setFlipYSetting(FlipYSetting set_flip_y_setting)
-{
-	mFlipYSetting = set_flip_y_setting;
+	mYInvertedSetting = set_y_inverted_setting;
 }
 
 SoundEffectSetting ConfigurationManager::getSoundEffectSetting() const
@@ -179,6 +174,26 @@ SensitivitySetting ConfigurationManager::getSensitivitySetting() const
 void ConfigurationManager::setSensitivitySetting(SensitivitySetting sensitivity_setting)
 {
 	mSensitivitySetting = sensitivity_setting;
+}
+
+MouseSetting ConfigurationManager::getMouseSetting() const
+{
+	return mMouseSetting;
+}
+
+void ConfigurationManager::setMouseSetting(MouseSetting mouse_setting) 
+{
+	mMouseSetting = mouse_setting;
+}
+
+ScreenSetting ConfigurationManager::getScreenSetting() const
+{
+	return mScreenSetting;
+}
+
+void ConfigurationManager::setScreenSetting(ScreenSetting screen_setting)
+{
+	mScreenSetting = screen_setting;
 }
 
 void ConfigurationManager::__loadKeySettings(const QDomElement& element)
@@ -209,77 +224,44 @@ QDomElement ConfigurationManager::__saveKeySettings(QDomDocument& doc) const
     return key_settings;
 }
 
-void ConfigurationManager::_loadVolumeSetting(const QDomElement& element)
+void ConfigurationManager::_loadMusicSetting(const QDomElement& element)
 {
-	auto volume_node = element.firstChildElement();
-	unsigned volume_value = volume_node.attribute(VOLUME_VALUE).toUInt();
+	auto music_node = element.firstChildElement();
+	unsigned music_value = music_node.attribute(MUSIC_VALUE).toUInt();
 
-	mVolumeSetting.setVolume(volume_value);
+	mMusicSetting.setMusic(music_value);
 }
 
-QDomElement ConfigurationManager::_saveVolumeSetting(QDomDocument& doc) const
+QDomElement ConfigurationManager::_saveMusicSetting(QDomDocument& doc) const
 {
-	auto volume_setting = doc.createElement(VOLUME_SETTING);
+	auto music_setting = doc.createElement(MUSIC_SETTING);
 
-	auto element = doc.createElement(VOLUME);
-	element.setAttribute(VOLUME_VALUE,mVolumeSetting.getVolume());
+	auto element = doc.createElement(MUSIC);
+	element.setAttribute(MUSIC_VALUE,mMusicSetting.getMusic());
 
-	volume_setting.appendChild(element);
+	music_setting.appendChild(element);
 
-	return volume_setting;
+	return music_setting;
 }
 
-void ConfigurationManager::_loadResolutionRatioSetting(const QDomElement& element)
+void ConfigurationManager::_loadYInvertedSetting(const QDomElement& element)
 {
-	auto resolution_node_h = element.firstChildElement();
-	ResolutionRatioSetting::Direction direction_h = (ResolutionRatioSetting::Direction)resolution_node_h.attribute(DIRECTION).toUInt();
-	unsigned resolution_ratio_value_h =  resolution_node_h.attribute(RESOLUTION_RATIO_VALUE).toUInt();
-	mResolutionRatioSetting.setResolutionRatio(direction_h,resolution_ratio_value_h);
-	
-	auto resolution_node_v = resolution_node_h.nextSiblingElement();
-	ResolutionRatioSetting::Direction direction_v = (ResolutionRatioSetting::Direction)resolution_node_v.attribute(DIRECTION).toUInt();
-	unsigned resolution_ratio_value_v =  resolution_node_v.attribute(RESOLUTION_RATIO_VALUE).toUInt();
-	mResolutionRatioSetting.setResolutionRatio(direction_v,resolution_ratio_value_v);
+	auto y_inverted_node = element.firstChildElement();
+	bool y_inverted_value = y_inverted_node.attribute(VALUE).toUInt();
 
-
+	mYInvertedSetting.setYInverted(y_inverted_value);
 }
 
-QDomElement ConfigurationManager::_saveResolutionRatioSetting(QDomDocument& doc) const
+QDomElement ConfigurationManager::_saveYInvertedSetting(QDomDocument &doc) const
 {
-	auto resolution_ratio_setting = doc.createElement(RESOLUTION_RATIO_SETTING);
+	auto y_inverted_setting = doc.createElement(Y_INVERTED_SETTING);
 
-	auto element_h = doc.createElement(mResolutionRatioSetting.getName((ResolutionRatioSetting::Direction)0));
-	element_h.setAttribute(DIRECTION,0);
-	element_h.setAttribute(RESOLUTION_RATIO_VALUE,mResolutionRatioSetting.getResolutionRatio((ResolutionRatioSetting::Direction)0));
-	auto element_v = doc.createElement(mResolutionRatioSetting.getName((ResolutionRatioSetting::Direction)1));
-	element_v.setAttribute(DIRECTION,1);
-	element_v.setAttribute(RESOLUTION_RATIO_VALUE,mResolutionRatioSetting.getResolutionRatio((ResolutionRatioSetting::Direction)1));
+	auto element = doc.createElement(Y_INVERTED);
+	element.setAttribute(VALUE,mYInvertedSetting.getYInverted());
 
-	resolution_ratio_setting.appendChild(element_h);
-	resolution_ratio_setting.appendChild(element_v);
+	y_inverted_setting.appendChild(element);
 
-	return resolution_ratio_setting;
-
-}
-
-void ConfigurationManager::_loadFlipYSetting(const QDomElement& element)
-{
-	auto flip_y_node = element.firstChildElement();
-	bool flip_y_value = (flip_y_node.attribute(VALUE) == "true");
-
-	mVolumeSetting.setVolume(flip_y_value);
-}
-
-QDomElement ConfigurationManager::_saveFlipYSetting(QDomDocument &doc) const
-{
-	auto flip_y_setting = doc.createElement(FLIP_Y_SETTING);
-
-	auto element = doc.createElement(IS_FLIP_Y);
-	element.setAttribute(VALUE,mFlipYSetting.getIsFlipY());
-
-	flip_y_setting.appendChild(element);
-
-	return flip_y_setting;
+	return y_inverted_setting;
 }
 
 void ConfigurationManager::_loadSoundEffectSetting(const QDomElement& element)
@@ -319,4 +301,51 @@ QDomElement ConfigurationManager::_saveSensitivitySetting(QDomDocument& doc) con
 	sensitivity_effect_setting.appendChild(element);
 
 	return sensitivity_effect_setting;
+}
+
+void ConfigurationManager::_loadMouseSetting(const QDomElement& element)
+{
+	for(auto mouse_node = element.firstChildElement() ; !mouse_node.isNull() ; mouse_node = mouse_node.nextSiblingElement())
+	{
+		MouseSetting::Function function_code = (MouseSetting::Function)mouse_node.attribute(MOUSE_FUNCTION).toUInt();
+		InputManager::InputCode input_code = (InputManager::InputCode)mouse_node.attribute(MOUSE_CODE).toUInt();
+
+		mMouseSetting.setMouse(function_code, input_code);
+	}
+}
+
+QDomElement ConfigurationManager::_saveMouseSetting(QDomDocument& doc) const
+{
+	auto mouse_setting = doc.createElement(MOUSE_SETTING);
+
+	for(unsigned function = (unsigned)mMouseSetting.begin() ; function <= (unsigned)mMouseSetting.end() ; ++function)
+	{
+		auto element = doc.createElement(mMouseSetting.getName((MouseSetting::Function)function));
+
+		element.setAttribute(MOUSE_FUNCTION, function);
+		element.setAttribute(MOUSE_CODE, (unsigned)mMouseSetting.getMouse((MouseSetting::Function)function));
+
+		mouse_setting.appendChild(element);
+	}
+
+	return mouse_setting;
+}
+
+void ConfigurationManager::_loadSreenSetting(const QDomElement& element)
+{
+	auto resolution_node = element.firstChildElement(RESOLUTION);
+	unsigned width_value = resolution_node.attribute(WIDTH).toUInt();
+	unsigned height_value = resolution_node.attribute(HEIGHT).toUInt();
+	mScreenSetting.setResolutionWidth(width_value);
+	mScreenSetting.setResolutionHeight(height_value);
+}
+
+QDomElement ConfigurationManager::_saveScreenSetting(QDomDocument& doc) const
+{
+	auto screen_setting = doc.createElement(SCREEN_SETTING);
+	auto resolution = doc.createElement(RESOLUTION);
+	resolution.setAttribute(WIDTH,mScreenSetting.getResolutionWidth());
+	resolution.setAttribute(HEIGHT,mScreenSetting.getResolutionHeight());
+	screen_setting.appendChild(resolution);
+	return screen_setting;
 }

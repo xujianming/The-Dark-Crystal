@@ -2,35 +2,42 @@
 
 KeySettings::KeySettings()
 {
-    mKeyMap[FORWARD] = pair<QString, InputManager::InputCode>("Forward", InputManager::KC_W);
-    mKeyMap[BACKWARD] = pair<QString, InputManager::InputCode>("Backward", InputManager::KC_S);
-    mKeyMap[LEFTWARD] = pair<QString, InputManager::InputCode>("Leftward", InputManager::KC_A);
-    mKeyMap[RIGHTWARD] = pair<QString, InputManager::InputCode>("Rightward", InputManager::KC_D);
-    mKeyMap[JUMP] = pair<QString, InputManager::InputCode>("Jump", InputManager::KC_SPACE);
-    mKeyMap[ACTIVATE] = pair<QString, InputManager::InputCode>("Activate", InputManager::KC_E);
+	mKeyMap[FORWARD] = pair<QString, InputManager::InputCode>("Forward", InputManager::KC_W);
+	mKeyMap[BACKWARD] = pair<QString, InputManager::InputCode>("Backward", InputManager::KC_S);
+	mKeyMap[LEFTWARD] = pair<QString, InputManager::InputCode>("Leftward", InputManager::KC_A);
+	mKeyMap[RIGHTWARD] = pair<QString, InputManager::InputCode>("Rightward", InputManager::KC_D);
+	mKeyMap[JUMP] = pair<QString, InputManager::InputCode>("Jump", InputManager::KC_SPACE);
+	mKeyMap[SPRINT] = pair<QString, InputManager::InputCode>("Sprint", InputManager::KC_LSHIFT);
+	mKeyMap[SWITCH] = pair<QString, InputManager::InputCode>("Switch", InputManager::KC_Q);
+	mKeyMap[ARM1] = pair<QString, InputManager::InputCode>("Arm1", InputManager::KC_1);
+	mKeyMap[ARM2] = pair<QString, InputManager::InputCode>("Arm2", InputManager::KC_2);
+	mKeyMap[ARM3] = pair<QString, InputManager::InputCode>("Arm3", InputManager::KC_3);
+	mKeyMap[ARM4] = pair<QString, InputManager::InputCode>("Arm4", InputManager::KC_4);
+	mKeyMap[ACTIVATE] = pair<QString, InputManager::InputCode>("Activate", InputManager::KC_E);
+
 }
 
 void KeySettings::setKey(Function function, InputManager::InputCode key)
 {
-    mKeyMap[function].second = key;
+	mKeyMap[function].second = key;
 }
 
 InputManager::InputCode KeySettings::getKey(Function function) const
 {
-    return mKeyMap.at(function).second;
+	return mKeyMap.at(function).second;
 }
 
 QString KeySettings::getName(Function function) const
 {
-    return mKeyMap.at(function).first;
+	return mKeyMap.at(function).first;
 }
 
 KeySettings::Function KeySettings::begin() const
 {
-    return FORWARD;
+	return FORWARD;
 }
 
 KeySettings::Function KeySettings::end() const
 {
-    return ACTIVATE;
+	return ACTIVATE;
 }

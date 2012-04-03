@@ -13,6 +13,9 @@
 using namespace std;
 using namespace dt;
 
+#define SL_TRUE "true"
+#define SL_FALSE "false"
+
 #define SL_SCENE "scene"
 #define SL_NAME "name"
 #define SL_NODES "nodes"
@@ -27,6 +30,12 @@ using namespace dt;
 #define SL_QX "qx"
 #define SL_QY "qy"
 #define SL_QZ "qz"
+#define SL_COLOUR_R "r"
+#define SL_COLOUR_G "g"
+#define SL_COLOUR_B "b"
+#define SL_COLOUR_A "a"
+
+#define SL_COMPONENT_ENABLED "enabled"
 
 #define SL_MESH_HANDLE "meshFile"
 #define SL_MESH_ENTITY "entity"
@@ -45,19 +54,49 @@ using namespace dt;
 #define SL_MESH_PLANE_VTILE "vTile"
 
 #define SL_LIGHT "light"
+#define SL_LIGHT_TYPE "type"
+#define SL_LIGHT_TYPE_POINT "point"
+#define SL_LIGHT_TYPE_DIRECTIONAL "directional"
+#define SL_LIGHT_TYPE_SPOT "spot"
+#define SL_LIGHT_DIFFUSE "colourDiffuse"
+#define SL_LIGHT_SPECULAR "colourSpecular"
+#define SL_LIGHT_ATTENUATION "lightAttenuation"
+#define SL_LIGHT_ATTENUATION_RANGE "range"
+#define SL_LIGHT_ATTENUATION_CONSTANT "constant"
+#define SL_LIGHT_ATTENUATION_LINEAR "linear"
+#define SL_LIGHT_ATTENUATION_QUADRATIC "quadratic"
+#define SL_LIGHT_RANGE "lightRange"
+#define SL_LIGHT_RANGE_INNER "inner"
+#define SL_LIGHT_RANGE_OUTER "outer"
+#define SL_LIGHT_RANGE_FALLOFF "falloff"
 #define SL_LIGHT_DIRECTION "directionVector"
 
 #define SL_CAST_SHADOWS "castShadows"
 
 #define SL_CAMERA "camera"
-#define SL_SCRIPT_PATH "scriptPath"
+//#define SL_CAMERA_VIEW_MODE "viewMode"
+#define SL_CAMERA_POLYGON_MODE "polyMode"
+#define SL_CAMERA_FOV "fov"
+#define SL_CAMERA_CLIPPING "clipping"
+#define SL_CAMERA_CLIPPING_NEAR "near"
+#define SL_CAMERA_CLIPPING_FAR "far"
+
+#define SL_SCPATH "scpath" /* script path */
+#define SL_SCPATH_PATH "path"
+#define SL_SCPATH_UPDATE_ENABLED "updateCallEnabled"
+
 #define SL_MUSIC "music"
+#define SL_MUSIC_PATH "musicPath"
+#define SL_MUSIC_VOLUME "volume"
 
 #define SL_SOUND "sound"
-#define SL_SOUND_NAME "soundFile"
-#define SL_SOUND_VOL "volume"
+#define SL_SOUND_PATH "soundFile"
+#define SL_SOUND_VOLUME "volume"
 
 #define SL_INTERACTOR "interactor"
+#define SL_INTERACTOR_RANGE "range"
+#define SL_INTERACTOR_OFFSET "offset"
+#define SL_INTERACTOR_INTERVAL "interval"
 #define SL_INTERACTOR_TYPE "type"
 #define SL_INTERACTOR_TYPE_RAYCASTING "RayCasting"
 #define SL_INTERACTOR_TYPE_COLLISION "Collision"

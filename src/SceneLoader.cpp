@@ -81,7 +81,7 @@ Node::NodeSP SceneLoader::__loadElement(const QDomElement& og_element, Node::Nod
     {
         node = __loadMusic(og_element, dt_node);                   //Music
     }
-    else if ( name == SL_SCRIPT_PATH )
+    else if ( name == SL_SCPATH )
     {
         node = __loadScriptPath(og_element, dt_node);              //ScriptPath
     }
@@ -168,18 +168,19 @@ Node::NodeSP SceneLoader::__loadMesh(const QDomElement& og_component, Node::Node
                 rot.attribute(SL_QX).toFloat(), rot.attribute(SL_QY).toFloat(), rot.attribute(SL_QZ).toFloat()));
             node->setScale(Ogre::Vector3(scale.attribute(SL_X).toFloat(), scale.attribute(SL_Y).toFloat(),
                 scale.attribute(SL_Z).toFloat()));
-        }        
+        }
 
-        //entity
         QDomElement unknown_mesh = og_component.firstChildElement(SL_SCALE).nextSiblingElement();
         if ( unknown_mesh.nodeName() == SL_MESH_ENTITY )
         {
             const QDomElement& entity = unknown_mesh;
 
-            std::tr1::shared_ptr<MeshComponent> mesh = node->addComponent<MeshComponent>(
+            //add mesh component
+            auto mesh = node->addComponent<MeshComponent>(
                 new MeshComponent(entity.attribute(SL_MESH_HANDLE), "", entity.attribute(SL_NAME))
                 );
 
+            //set entity attributes
             for ( QDomElement mat = entity.firstChildElement(); !mat.isNull(); mat = mat.nextSiblingElement() )
             {
                 QString material_handle = mat.attribute(SL_MESH_ENTITY_MATERIAL_NAME);
@@ -188,15 +189,24 @@ Node::NodeSP SceneLoader::__loadMesh(const QDomElement& og_component, Node::Node
                 mesh->getOgreEntity()->getSubEntity(index)->setMaterialName(material_handle.toStdString());
             }
 
-            mesh->setCastShadows(entity.attribute(SL_CAST_SHADOWS).toInt());
+            QString cast_shadows = entity.attribute(SL_CAST_SHADOWS);
+            if ( cast_shadows == SL_TRUE )
+            {
+                mesh->setCastShadows(true);
+            }
+            else if ( cast_shadows == SL_FALSE )
+            {
+                mesh->setCastShadows(false);
+            }
+
+            mesh->enable();
         }
         else if ( unknown_mesh.nodeName() == SL_MESH_PLANE )
         {
-            //plane
             const QDomElement& plane = unknown_mesh;
             if ( !plane.isNull() )
             {
-                //create mesh
+                //create plane
                 OgreProcedural::PlaneGenerator()
                     .setSizeX(plane.attribute(SL_MESH_PLANE_SIZEX).toFloat())
                     .setSizeY(plane.attribute(SL_MESH_PLANE_SIZEY).toFloat())
@@ -211,10 +221,12 @@ Node::NodeSP SceneLoader::__loadMesh(const QDomElement& og_component, Node::Node
                     plane.firstChildElement(SL_MESH_PLANE_NORMAL).attribute(SL_Z).toFloat()))
                     .realizeMesh(plane.attribute(SL_NAME).toStdString());
 
-                //add entity
-                node->addComponent<MeshComponent>(
+                //add mesh component
+                auto mesh = node->addComponent<MeshComponent>(
                     new MeshComponent(plane.attribute(SL_NAME), plane.attribute(SL_MESH_PLANE_MATERIAL),plane.attribute(SL_NAME))
                     );
+
+                mesh->enable();
             }
         }
     }
@@ -239,12 +251,67 @@ Node::NodeSP SceneLoader::__loadLight(const QDomElement& og_component, Node::Nod
 
             node->setPosition(pos.attribute(SL_X).toFloat(), pos.attribute(SL_Y).toFloat(),
                 pos.attribute(SL_Z).toFloat());
-            node->setDirection(Ogre::Vector3(dir.attribute(SL_X).toFloat(), dir.attribute(SL_Y).toFloat(),
-                dir.attribute(SL_Z).toFloat()));
+            node->setDirection(Ogre::Vector3(dir.attribute(SL_X).toFloat(),
+                dir.attribute(SL_Y).toFloat(), dir.attribute(SL_Z).toFloat()));
         }
 
-        node->addComponent<LightComponent>(new LightComponent(name))->setCastShadows(
-            og_component.attribute(SL_CAST_SHADOWS).toInt());
+        //add light component
+        auto light = node->addComponent<LightComponent>(new LightComponent(name));
+        auto og_light = light->getOgreLight();
+        QDomElement colour_diffuse = og_component.firstChildElement(SL_LIGHT_DIFFUSE);
+        QDomElement colour_specular = og_component.firstChildElement(SL_LIGHT_SPECULAR);
+
+        //set light attributes
+        og_light->setDiffuseColour(colour_diffuse.attribute(SL_COLOUR_R).toFloat(),
+            colour_diffuse.attribute(SL_COLOUR_G).toFloat(),
+            colour_diffuse.attribute(SL_COLOUR_B).toFloat());
+        og_light->setSpecularColour(colour_specular.attribute(SL_COLOUR_R).toFloat(),
+            colour_specular.attribute(SL_COLOUR_G).toFloat(),
+            colour_specular.attribute(SL_COLOUR_B).toFloat());
+
+        QString light_type = og_component.attribute(SL_LIGHT_TYPE);
+        if ( light_type == SL_LIGHT_TYPE_POINT )
+        {
+            og_light->setType(Ogre::Light::LT_POINT);
+
+            QDomElement light_attenuation = og_component.firstChildElement(SL_LIGHT_ATTENUATION);
+
+            og_light->setAttenuation(light_attenuation.attribute(SL_LIGHT_ATTENUATION_RANGE).toFloat(),
+                light_attenuation.attribute(SL_LIGHT_ATTENUATION_CONSTANT).toFloat(),
+                light_attenuation.attribute(SL_LIGHT_ATTENUATION_LINEAR).toFloat(),
+                light_attenuation.attribute(SL_LIGHT_ATTENUATION_QUADRATIC).toFloat());
+        }
+        else if ( light_type == SL_LIGHT_TYPE_DIRECTIONAL )
+        {
+            og_light->setType(Ogre::Light::LT_DIRECTIONAL);
+        }
+        else if ( light_type == SL_LIGHT_TYPE_SPOT )
+        {
+            og_light->setType(Ogre::Light::LT_SPOTLIGHT);
+
+            QDomElement light_attenuation = og_component.firstChildElement(SL_LIGHT_ATTENUATION);
+            QDomElement light_range = og_component.firstChildElement(SL_LIGHT_RANGE);
+
+            og_light->setAttenuation(light_attenuation.attribute(SL_LIGHT_ATTENUATION_RANGE).toFloat(),
+                light_attenuation.attribute(SL_LIGHT_ATTENUATION_CONSTANT).toFloat(),
+                light_attenuation.attribute(SL_LIGHT_ATTENUATION_LINEAR).toFloat(),
+                light_attenuation.attribute(SL_LIGHT_ATTENUATION_QUADRATIC).toFloat());
+            og_light->setSpotlightRange(Ogre::Radian(light_range.attribute(SL_LIGHT_RANGE_INNER).toFloat()),
+                Ogre::Radian(light_range.attribute(SL_LIGHT_RANGE_OUTER).toFloat()),
+                light_range.attribute(SL_LIGHT_RANGE_FALLOFF).toFloat());
+        }
+
+        QString cast_shadows = og_component.attribute(SL_CAST_SHADOWS);
+        if ( cast_shadows == SL_TRUE )
+        {
+            light->setCastShadows(true);
+        }
+        else if ( cast_shadows == SL_FALSE )
+        {
+            light->setCastShadows(false);
+        }
+
+        light->enable();
     }
 
     return node;
@@ -271,7 +338,18 @@ Node::NodeSP SceneLoader::__loadCamera(const QDomElement& og_component, Node::No
                 rot.attribute(SL_QX).toFloat(), rot.attribute(SL_QY).toFloat(), rot.attribute(SL_QZ).toFloat()));
         }
 
-        node->addComponent<CameraComponent>(new CameraComponent(name));
+        //add camera component
+        auto camera = node->addComponent<CameraComponent>(new CameraComponent(name));
+        auto og_camera = camera->getCamera();
+        QDomElement clipping = og_component.firstChildElement(SL_CAMERA_CLIPPING);
+
+        //set camera attributes
+        og_camera->setPolygonMode(Ogre::PolygonMode(og_component.attribute(SL_CAMERA_POLYGON_MODE).toInt()));
+        og_camera->setFOVy(Ogre::Radian(og_component.attribute(SL_CAMERA_FOV).toFloat()));
+        og_camera->setNearClipDistance(Ogre::Real(clipping.attribute(SL_CAMERA_CLIPPING_NEAR).toFloat()));
+        og_camera->setFarClipDistance(Ogre::Real(clipping.attribute(SL_CAMERA_CLIPPING_FAR).toFloat()));
+
+        camera->enable();
     }
 
     return node;
@@ -295,7 +373,29 @@ Node::NodeSP SceneLoader::__loadScriptPath(const QDomElement& og_component, Node
                 pos.attribute(SL_Z).toFloat());
         }
 
-        node->addComponent<ScriptComponent>(new ScriptComponent(name));
+        //add script path component
+        auto script_path = node->addComponent<ScriptComponent>(new ScriptComponent(og_component.attribute(SL_SCPATH_PATH), name));
+
+        //set script path attribute
+        QString update_enable = og_component.attribute(SL_SCPATH_UPDATE_ENABLED);
+        if ( update_enable == SL_TRUE )
+        {
+            script_path->SetUpdateEnabled(true);
+        }
+        else if ( update_enable == SL_FALSE )
+        {
+            script_path->SetUpdateEnabled(false);
+        }
+
+        QString enable = og_component.attribute(SL_COMPONENT_ENABLED);
+        if ( enable == SL_TRUE )
+        {
+            script_path->enable();
+        }
+        else if ( enable == SL_FALSE )
+        {
+            script_path->disable();
+        }
     }
 
     return node;
@@ -319,9 +419,23 @@ Node::NodeSP SceneLoader::__loadSound(const QDomElement& og_component, Node::Nod
                 pos.attribute(SL_Z).toFloat());
         }
 
-        auto s = node->addComponent<SoundComponent>(new SoundComponent(og_component.attribute(SL_SOUND_NAME), name));
+        //add sound component
+        auto sound = node->addComponent<SoundComponent>(new SoundComponent(og_component.attribute(SL_SOUND_PATH), name));
         
-        s->setVolume(og_component.attribute(SL_SOUND_VOL).toFloat());
+        //set sound attributes
+        sound->setSoundFileName(og_component.attribute(SL_SOUND_PATH));
+        sound->setVolume(og_component.attribute(SL_SOUND_VOLUME).toFloat());
+        /* loop attribute not used for now */
+
+        QString enable = og_component.attribute(SL_COMPONENT_ENABLED);
+        if ( enable == SL_TRUE )
+        {
+            sound->enable();
+        }
+        else if ( enable == SL_FALSE )
+        {
+            sound->disable();
+        }
     }
 
     return node;
@@ -345,7 +459,23 @@ Node::NodeSP SceneLoader::__loadMusic(const QDomElement& og_component, Node::Nod
                 pos.attribute(SL_Z).toFloat());
         }
 
-        node->addComponent<MusicComponent>(new MusicComponent(name));
+        //add music component
+        auto music = node->addComponent<MusicComponent>(new MusicComponent(name));
+
+        //set music attributes
+        music->setMusicFileName(og_component.attribute(SL_MUSIC_PATH));
+        music->setVolume(og_component.attribute(SL_MUSIC_VOLUME).toFloat());
+        /* loop attribute not used for now */
+
+        QString enable = og_component.attribute(SL_COMPONENT_ENABLED);
+        if ( enable == SL_TRUE )
+        {
+            music->enable();
+        }
+        else if ( enable == SL_FALSE )
+        {
+            music->disable();
+        }
     }
 
     return node;
@@ -369,14 +499,31 @@ Node::NodeSP SceneLoader::__loadInteractor(const QDomElement& og_component, Node
                 pos.attribute(SL_Z).toFloat());
         }
 
-        QString s = og_component.attribute(SL_INTERACTOR_TYPE);
-        if ( s == SL_INTERACTOR_TYPE_RAYCASTING )
+        //add interactor component
+        QString type = og_component.attribute(SL_INTERACTOR_TYPE);
+        std::tr1::shared_ptr<InteractionComponent> interactor;
+        if ( type == SL_INTERACTOR_TYPE_RAYCASTING )
         {
-            node->addComponent<InteractionComponent>(new RaycastComponent(name));
+            interactor = node->addComponent<InteractionComponent>(new RaycastComponent(name));
         }
-        else if ( s == SL_INTERACTOR_TYPE_COLLISION )
+        else if ( type == SL_INTERACTOR_TYPE_COLLISION )
         {
-            node->addComponent<InteractionComponent>(new CollisionComponent(name));
+            interactor = node->addComponent<InteractionComponent>(new CollisionComponent(name));
+        }
+
+        //set interactor attributes
+        interactor->setRange(og_component.attribute(SL_INTERACTOR_RANGE).toFloat());
+        interactor->setOffset(og_component.attribute(SL_INTERACTOR_OFFSET).toFloat());
+        interactor->setIntervalTime(og_component.attribute(SL_INTERACTOR_INTERVAL).toFloat());
+
+        QString enable = og_component.attribute(SL_COMPONENT_ENABLED);
+        if ( enable == SL_TRUE )
+        {
+            interactor->enable();
+        }
+        else if ( enable == SL_FALSE )
+        {
+            interactor->disable();
         }
     }
 
@@ -395,45 +542,58 @@ Node::NodeSP SceneLoader::__loadPhysics(const QDomElement& og_component, Node::N
             node = mScene->addChildNode(new Node(name + "_node"));
 
             QDomElement pos = og_component.firstChildElement(SL_POS);
-            QDomElement res_move = og_component.firstChildElement(SL_PHYSICS_RESMOVE);
-            QDomElement res_rotate = og_component.firstChildElement(SL_PHYSICS_RESROTATE);
-            QDomElement gravity = og_component.firstChildElement(SL_PHYSICS_GRAVITY);
 
             node->setPosition(pos.attribute(SL_X).toFloat(), pos.attribute(SL_Y).toFloat(),
                 pos.attribute(SL_Z).toFloat());
+        }
 
-            QString s = og_component.attribute(SL_PHYSICS_SHAPE);
-            auto type = PhysicsBodyComponent::CONVEX;
+        //get necessary attributes before initialize physics component
+        QString shape = og_component.attribute(SL_PHYSICS_SHAPE);
+        auto type = PhysicsBodyComponent::CONVEX;
 
-            if ( s == SL_PHYSICS_SHAPE_BOX )
-            {
-                type = PhysicsBodyComponent::BOX;
-            }
-            else if ( s == SL_PHYSICS_SHAPE_CYLINDER )
-            {
-                type = PhysicsBodyComponent::CYLINDER;
-            }
-            else if ( s == SL_PHYSICS_SHAPE_SPHERE )
-            {
-                type = PhysicsBodyComponent::SPHERE;
-            }
-            else if ( s == SL_PHYSICS_SHAPE_TRIMESH )
-            {
-                type = PhysicsBodyComponent::TRIMESH;
-            }
+        if ( shape == SL_PHYSICS_SHAPE_BOX )
+        {
+            type = PhysicsBodyComponent::BOX;
+        }
+        else if ( shape == SL_PHYSICS_SHAPE_CYLINDER )
+        {
+            type = PhysicsBodyComponent::CYLINDER;
+        }
+        else if ( shape == SL_PHYSICS_SHAPE_SPHERE )
+        {
+            type = PhysicsBodyComponent::SPHERE;
+        }
+        else if ( shape == SL_PHYSICS_SHAPE_TRIMESH )
+        {
+            type = PhysicsBodyComponent::TRIMESH;
+        }
 
-            auto physics = node->addComponent<PhysicsBodyComponent>(
-                new PhysicsBodyComponent(og_component.attribute(SL_PHYSICS_MESH_COM_NAME),name,type)
-                );
+        //add physics component
+        auto physics = node->addComponent<PhysicsBodyComponent>(
+            new PhysicsBodyComponent(og_component.attribute(SL_PHYSICS_MESH_COM_NAME),name,type)
+            );
 
-            physics->setRestrictMovement(res_move.attribute(SL_X).toFloat(),res_move.attribute(SL_Y).toFloat(),
-                res_move.attribute(SL_Z).toFloat());
-            physics->setRestrictRotation(res_rotate.attribute(SL_X).toFloat(),res_move.attribute(SL_Y).toFloat(),
-                res_move.attribute(SL_Z).toFloat());
-            physics->setMass(og_component.attribute(SL_PHYSICS_MASS).toFloat());
-            physics->setGravity(gravity.attribute(SL_X).toFloat(),gravity.attribute(SL_Y).toFloat(),
-                gravity.attribute(SL_Z).toFloat());
+        //set physics attributes
+        QDomElement res_move = og_component.firstChildElement(SL_PHYSICS_RESMOVE);
+        QDomElement res_rotate = og_component.firstChildElement(SL_PHYSICS_RESROTATE);
+        QDomElement gravity = og_component.firstChildElement(SL_PHYSICS_GRAVITY);
 
+        physics->setRestrictMovement(res_move.attribute(SL_X).toFloat(),res_move.attribute(SL_Y).toFloat(),
+            res_move.attribute(SL_Z).toFloat());
+        physics->setRestrictRotation(res_rotate.attribute(SL_X).toFloat(),res_move.attribute(SL_Y).toFloat(),
+            res_move.attribute(SL_Z).toFloat());
+        physics->setMass(og_component.attribute(SL_PHYSICS_MASS).toFloat());
+        physics->setGravity(gravity.attribute(SL_X).toFloat(),gravity.attribute(SL_Y).toFloat(),
+            gravity.attribute(SL_Z).toFloat());
+
+        QString enable = og_component.attribute(SL_COMPONENT_ENABLED);
+        if ( enable == SL_TRUE )
+        {
+            physics->enable();
+        }
+        else if ( enable == SL_FALSE )
+        {
+            physics->disable();
         }
     }
 

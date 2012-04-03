@@ -11,30 +11,36 @@ using namespace std;
 class KeySettings
 {
 public:
-    enum Function
-    {
-        FORWARD,
-        BACKWARD,
-        LEFTWARD,
-        RIGHTWARD,
-        JUMP,
-        ACTIVATE
-    };
+	enum Function
+	{
+		FORWARD,
+		BACKWARD,
+		LEFTWARD,
+		RIGHTWARD,
+		JUMP,
+		SPRINT,
+		SWITCH,
+		ARM1,
+		ARM2,
+		ARM3,
+		ARM4,
+		ACTIVATE
+	};
 
-    KeySettings();
+	KeySettings();
 
-    void setKey(Function function, InputManager::InputCode key);
+	void setKey(Function function, InputManager::InputCode key);
 
-    InputManager::InputCode getKey(Function function) const;
+	InputManager::InputCode getKey(Function function) const;
 
-    QString getName(Function function) const;
+	QString getName(Function function) const;
 
-    Function begin() const;
+	Function begin() const;
 
-    Function end() const;
+	Function end() const;
 
 private:
-    map<Function, pair<QString, InputManager::InputCode>> mKeyMap;
+	map<Function, pair<QString, InputManager::InputCode>> mKeyMap;
 };
 
 #endif

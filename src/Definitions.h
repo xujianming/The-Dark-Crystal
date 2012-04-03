@@ -10,16 +10,12 @@
 #define KEY_FUNCTION "function"
 #define KEY_CODE "code"
 // Volume Setting
-#define VOLUME_SETTING "Volume_Setting"
-#define VOLUME "Volume"
-#define VOLUME_VALUE "value"
-// ResolutionRatio Setting
-#define RESOLUTION_RATIO_SETTING "Resolution_Ratio_Setting"
-#define DIRECTION "direction"
-#define RESOLUTION_RATIO_VALUE "value"
+#define MUSIC_SETTING "Music_Setting"
+#define MUSIC "Music"
+#define MUSIC_VALUE "value"
 // FlipY Setting
-#define FLIP_Y_SETTING "Flip_Y_Setting"
-#define IS_FLIP_Y "Is_Flip_Y"
+#define Y_INVERTED_SETTING "Y_Inverted_Setting"
+#define Y_INVERTED "Y_Inverted"
 #define VALUE "value"
 // SoundEffect Setting
 #define SOUND_EFFECT_SETTING "Sound_Effect_Setting"
@@ -29,6 +25,15 @@
 #define SENSITIVITY_SETTING "Sensitivity_Setting"
 #define SENSITIVITY "Sensitivity"
 #define SENSITIVITY_VALUE "value"
+// Mouse Setting
+#define MOUSE_SETTING "Mouse_Setting"
+#define MOUSE_FUNCTION "function"
+#define MOUSE_CODE "code"
+// Screen Setting
+#define SCREEN_SETTING "Screen_Setting"
+#define RESOLUTION "Resolution"
+#define HEIGHT "height"
+#define WIDTH "width"
 //***************************************************************************************//
 
 #endif

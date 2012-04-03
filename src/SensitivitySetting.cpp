@@ -2,7 +2,7 @@
 
 SensitivitySetting::SensitivitySetting()
 {
-	mSentivity = 0;
+	mSentivity = 10;
 }
 
 unsigned SensitivitySetting::getSensitivity() const

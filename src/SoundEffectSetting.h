@@ -5,15 +5,15 @@ using namespace std;
 
 class SoundEffectSetting
 {
-  public:
-     SoundEffectSetting();
-	 
-	 void setSoundEffect(unsigned sound_effect);
-	 
-	 unsigned getSoundEffect() const;
-	 
-  private:
-     unsigned mSoundEffect;
+public:
+	SoundEffectSetting();
+
+	void setSoundEffect(unsigned sound_effect);
+
+	unsigned getSoundEffect() const;
+
+private:
+	unsigned mSoundEffect;
 };
 
 #endif

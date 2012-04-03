@@ -3,11 +3,12 @@
 
 #include "KeySettings.h"
 #include "Definitions.h"
-#include "VolumeSetting.h"
-#include "ResolutionRatioSetting.h"
-#include "FlipYSetting.h"
+#include "MusicSetting.h"
+#include "YInvertedSetting.h"
 #include "SoundEffectSetting.h"
 #include "SensitivitySetting.h"
+#include "MouseSetting.h"
+#include "ScreenSetting.h"
 
 #include <boost/noncopyable.hpp>
 
@@ -19,27 +20,23 @@
 class ConfigurationManager : boost::noncopyable
 {
 public:
-    static ConfigurationManager* getInstance();
+	static ConfigurationManager* getInstance();
 
-    bool loadConfig();
+	bool loadConfig();
 
-    bool saveConfig() const;
+	bool saveConfig() const;
 
-    KeySettings getKeySettings() const;
+	KeySettings getKeySettings() const;
 
-    void setKeySettings(KeySettings key_settings);
+	void setKeySettings(KeySettings key_settings);
 
-	VolumeSetting getVolumeSetting() const;
+	MusicSetting getMusicSetting() const;
 
-	void setVolumeSetting(VolumeSetting volume_setting);
+	void setMusicSetting(MusicSetting Music_setting);
 
-	ResolutionRatioSetting getResolutionRatioSetting() const;
+	YInvertedSetting getYInvertedSetting() const;
 
-	void setResolutionRatioSetting(ResolutionRatioSetting resolution_ratio_setting);
-
-	FlipYSetting getFlipYSetting() const;
-
-	void setFlipYSetting(FlipYSetting set_flip_setting);
+	void setYInvertedSetting(YInvertedSetting set_flip_setting);
 
 	SoundEffectSetting getSoundEffectSetting() const;
 
@@ -49,22 +46,26 @@ public:
 
 	void setSensitivitySetting(SensitivitySetting sensitivity_setting);
 
+	MouseSetting getMouseSetting() const;
+
+	void setMouseSetting(MouseSetting mouse_setting);
+
+	ScreenSetting getScreenSetting() const;
+
+	void setScreenSetting(ScreenSetting screen_setting);
+
 private:
-    void __loadKeySettings(const QDomElement& element);
+	void __loadKeySettings(const QDomElement& element);
 
-    QDomElement __saveKeySettings(QDomDocument& doc) const;
+	QDomElement __saveKeySettings(QDomDocument& doc) const;
 
-	void _loadVolumeSetting(const QDomElement& element);
+	void _loadMusicSetting(const QDomElement& element);
 
-	QDomElement _saveVolumeSetting(QDomDocument& doc) const;
+	QDomElement _saveMusicSetting(QDomDocument& doc) const;
 
-	void _loadResolutionRatioSetting(const QDomElement& element);
+	void _loadYInvertedSetting(const QDomElement& element);
 
-	QDomElement _saveResolutionRatioSetting(QDomDocument& doc) const;
-
-	void _loadFlipYSetting(const QDomElement& element);
-
-	QDomElement _saveFlipYSetting(QDomDocument& doc) const;
+	QDomElement _saveYInvertedSetting(QDomDocument& doc) const;
 
 	void _loadSoundEffectSetting(const QDomElement& element);
 
@@ -74,22 +75,32 @@ private:
 
 	QDomElement _saveSensitivitySetting(QDomDocument& doc) const;
 
-    ConfigurationManager();
+	void _loadMouseSetting(const QDomElement& element);
 
-    static std::shared_ptr<ConfigurationManager> mInstance;
+	QDomElement _saveMouseSetting(QDomDocument& doc) const;
 
-    KeySettings mKeySettings;
+	void _loadSreenSetting(const QDomElement& element) ;
 
-	VolumeSetting mVolumeSetting;
+	QDomElement _saveScreenSetting(QDomDocument& doc) const;
 
-	ResolutionRatioSetting mResolutionRatioSetting;
+	ConfigurationManager();
 
-	FlipYSetting mFlipYSetting;
+	static std::shared_ptr<ConfigurationManager> mInstance;
+
+	KeySettings mKeySettings;
+
+	MusicSetting mMusicSetting;
+
+	YInvertedSetting mYInvertedSetting;
 
 	SoundEffectSetting mSoundEffectSetting;
 
 	SensitivitySetting mSensitivitySetting;
-	
+
+	MouseSetting mMouseSetting;
+
+	ScreenSetting mScreenSetting;
+
 };
 
 #endif
