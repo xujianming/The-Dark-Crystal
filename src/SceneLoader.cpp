@@ -223,7 +223,7 @@ Node::NodeSP SceneLoader::__loadMesh(const QDomElement& og_component, Node::Node
 
                 //add mesh component
                 auto mesh = node->addComponent<MeshComponent>(
-                    new MeshComponent(plane.attribute(SL_NAME), plane.attribute(SL_MESH_PLANE_MATERIAL),plane.attribute(SL_NAME))
+                    new MeshComponent(plane.attribute(SL_NAME), plane.attribute(SL_MESH_PLANE_MATERIAL), plane.attribute(SL_NAME))
                     );
 
                 mesh->enable();
@@ -260,6 +260,7 @@ Node::NodeSP SceneLoader::__loadLight(const QDomElement& og_component, Node::Nod
         auto og_light = light->getOgreLight();
         QDomElement colour_diffuse = og_component.firstChildElement(SL_LIGHT_DIFFUSE);
         QDomElement colour_specular = og_component.firstChildElement(SL_LIGHT_SPECULAR);
+        QDomElement light_attenuation = og_component.firstChildElement(SL_LIGHT_ATTENUATION);
 
         //set light attributes
         og_light->setDiffuseColour(colour_diffuse.attribute(SL_COLOUR_R).toFloat(),
@@ -268,18 +269,15 @@ Node::NodeSP SceneLoader::__loadLight(const QDomElement& og_component, Node::Nod
         og_light->setSpecularColour(colour_specular.attribute(SL_COLOUR_R).toFloat(),
             colour_specular.attribute(SL_COLOUR_G).toFloat(),
             colour_specular.attribute(SL_COLOUR_B).toFloat());
+        og_light->setAttenuation(light_attenuation.attribute(SL_LIGHT_ATTENUATION_RANGE).toFloat(),
+            light_attenuation.attribute(SL_LIGHT_ATTENUATION_CONSTANT).toFloat(),
+            light_attenuation.attribute(SL_LIGHT_ATTENUATION_LINEAR).toFloat(),
+            light_attenuation.attribute(SL_LIGHT_ATTENUATION_QUADRATIC).toFloat());
 
         QString light_type = og_component.attribute(SL_LIGHT_TYPE);
         if ( light_type == SL_LIGHT_TYPE_POINT )
         {
             og_light->setType(Ogre::Light::LT_POINT);
-
-            QDomElement light_attenuation = og_component.firstChildElement(SL_LIGHT_ATTENUATION);
-
-            og_light->setAttenuation(light_attenuation.attribute(SL_LIGHT_ATTENUATION_RANGE).toFloat(),
-                light_attenuation.attribute(SL_LIGHT_ATTENUATION_CONSTANT).toFloat(),
-                light_attenuation.attribute(SL_LIGHT_ATTENUATION_LINEAR).toFloat(),
-                light_attenuation.attribute(SL_LIGHT_ATTENUATION_QUADRATIC).toFloat());
         }
         else if ( light_type == SL_LIGHT_TYPE_DIRECTIONAL )
         {
@@ -289,13 +287,8 @@ Node::NodeSP SceneLoader::__loadLight(const QDomElement& og_component, Node::Nod
         {
             og_light->setType(Ogre::Light::LT_SPOTLIGHT);
 
-            QDomElement light_attenuation = og_component.firstChildElement(SL_LIGHT_ATTENUATION);
             QDomElement light_range = og_component.firstChildElement(SL_LIGHT_RANGE);
 
-            og_light->setAttenuation(light_attenuation.attribute(SL_LIGHT_ATTENUATION_RANGE).toFloat(),
-                light_attenuation.attribute(SL_LIGHT_ATTENUATION_CONSTANT).toFloat(),
-                light_attenuation.attribute(SL_LIGHT_ATTENUATION_LINEAR).toFloat(),
-                light_attenuation.attribute(SL_LIGHT_ATTENUATION_QUADRATIC).toFloat());
             og_light->setSpotlightRange(Ogre::Radian(light_range.attribute(SL_LIGHT_RANGE_INNER).toFloat()),
                 Ogre::Radian(light_range.attribute(SL_LIGHT_RANGE_OUTER).toFloat()),
                 light_range.attribute(SL_LIGHT_RANGE_FALLOFF).toFloat());
@@ -570,7 +563,7 @@ Node::NodeSP SceneLoader::__loadPhysics(const QDomElement& og_component, Node::N
 
         //add physics component
         auto physics = node->addComponent<PhysicsBodyComponent>(
-            new PhysicsBodyComponent(og_component.attribute(SL_PHYSICS_MESH_COM_NAME),name,type)
+            new PhysicsBodyComponent(og_component.attribute(SL_PHYSICS_MESH_COM_NAME), name, type)
             );
 
         //set physics attributes
@@ -578,12 +571,12 @@ Node::NodeSP SceneLoader::__loadPhysics(const QDomElement& og_component, Node::N
         QDomElement res_rotate = og_component.firstChildElement(SL_PHYSICS_RESROTATE);
         QDomElement gravity = og_component.firstChildElement(SL_PHYSICS_GRAVITY);
 
-        physics->setRestrictMovement(res_move.attribute(SL_X).toFloat(),res_move.attribute(SL_Y).toFloat(),
+        physics->setRestrictMovement(res_move.attribute(SL_X).toFloat(), res_move.attribute(SL_Y).toFloat(),
             res_move.attribute(SL_Z).toFloat());
-        physics->setRestrictRotation(res_rotate.attribute(SL_X).toFloat(),res_move.attribute(SL_Y).toFloat(),
+        physics->setRestrictRotation(res_rotate.attribute(SL_X).toFloat(), res_move.attribute(SL_Y).toFloat(),
             res_move.attribute(SL_Z).toFloat());
         physics->setMass(og_component.attribute(SL_PHYSICS_MASS).toFloat());
-        physics->setGravity(gravity.attribute(SL_X).toFloat(),gravity.attribute(SL_Y).toFloat(),
+        physics->setGravity(gravity.attribute(SL_X).toFloat(), gravity.attribute(SL_Y).toFloat(),
             gravity.attribute(SL_Z).toFloat());
 
         QString enable = og_component.attribute(SL_COMPONENT_ENABLED);
