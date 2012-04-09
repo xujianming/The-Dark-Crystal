@@ -3,98 +3,69 @@
 
 ControlSetting::ControlSetting()
 {
-	mKeyMap[FORWARD] = pair<QString, InputManager::InputCode>("Forward", InputManager::KC_W);
-	mKeyMap[BACKWARD] = pair<QString, InputManager::InputCode>("Backward", InputManager::KC_S);
-	mKeyMap[LEFTWARD] = pair<QString, InputManager::InputCode>("Leftward", InputManager::KC_A);
-	mKeyMap[RIGHTWARD] = pair<QString, InputManager::InputCode>("Rightward", InputManager::KC_D);
-	mKeyMap[JUMP] = pair<QString, InputManager::InputCode>("Jump", InputManager::KC_SPACE);
-	mKeyMap[SPRINT] = pair<QString, InputManager::InputCode>("Sprint", InputManager::KC_LSHIFT);
-	mKeyMap[SWITCH] = pair<QString, InputManager::InputCode>("Switch", InputManager::KC_Q);
-	mKeyMap[ARM1] = pair<QString, InputManager::InputCode>("Arm1", InputManager::KC_1);
-	mKeyMap[ARM2] = pair<QString, InputManager::InputCode>("Arm2", InputManager::KC_2);
-	mKeyMap[ARM3] = pair<QString, InputManager::InputCode>("Arm3", InputManager::KC_3);
-	mKeyMap[ARM4] = pair<QString, InputManager::InputCode>("Arm4", InputManager::KC_4);
-	mKeyMap[ACTIVATE] = pair<QString, InputManager::InputCode>("Activate", InputManager::KC_E);
+    mKeyMap[FORWARD] = pair<QString, InputManager::InputCode>("Forward", InputManager::KC_W);
+    mKeyMap[BACKWARD] = pair<QString, InputManager::InputCode>("Backward", InputManager::KC_S);
+    mKeyMap[LEFTWARD] = pair<QString, InputManager::InputCode>("Leftward", InputManager::KC_A);
+    mKeyMap[RIGHTWARD] = pair<QString, InputManager::InputCode>("Rightward", InputManager::KC_D);
+    mKeyMap[JUMP] = pair<QString, InputManager::InputCode>("Jump", InputManager::KC_SPACE);
+    mKeyMap[SPRINT] = pair<QString, InputManager::InputCode>("Sprint", InputManager::KC_LSHIFT);
+    mKeyMap[SWITCH] = pair<QString, InputManager::InputCode>("Switch", InputManager::KC_Q);
+    mKeyMap[ARM1] = pair<QString, InputManager::InputCode>("Arm1", InputManager::KC_1);
+    mKeyMap[ARM2] = pair<QString, InputManager::InputCode>("Arm2", InputManager::KC_2);
+    mKeyMap[ARM3] = pair<QString, InputManager::InputCode>("Arm3", InputManager::KC_3);
+    mKeyMap[ARM4] = pair<QString, InputManager::InputCode>("Arm4", InputManager::KC_4);
+    mKeyMap[ATTACK] = pair<QString, InputManager::InputCode>("Attack", InputManager::MC_LEFT);
+    mKeyMap[DEFENSE] = pair<QString, InputManager::InputCode>("Defence", InputManager::MC_RIGHT);
+    mKeyMap[ACTIVATE] = pair<QString, InputManager::InputCode>("Activate", InputManager::KC_E);
 
-	mMouseMap[ATTACK] = pair<QString, InputManager::InputCode>("Attack", InputManager::MC_LEFT);
-	mMouseMap[DEFENSE] = pair<QString, InputManager::InputCode>("Defence", InputManager::MC_RIGHT);
+    mYInverted = false;
 
-	mYInverted = false;
-
-	mSentivity = 10;
+    mSentivity = 10;
 
 }
 
 void ControlSetting::setKey(KeyFunction KeyFunction, InputManager::InputCode key)
 {
-	mKeyMap[KeyFunction].second = key;
+    mKeyMap[KeyFunction].second = key;
 }
 
 InputManager::InputCode ControlSetting::getKey(KeyFunction KeyFunction) const
 {
-	return mKeyMap.at(KeyFunction).second;
+    return mKeyMap.at(KeyFunction).second;
 }
 
 QString ControlSetting::getKeyName(KeyFunction KeyFunction) const
 {
-	return mKeyMap.at(KeyFunction).first;
+    return mKeyMap.at(KeyFunction).first;
 }
 
 ControlSetting::KeyFunction ControlSetting::keyBegin() const
 {
-	return FORWARD;
+    return FORWARD;
 }
 
 ControlSetting::KeyFunction ControlSetting::keyEnd() const
 {
-	return ACTIVATE;
+    return ACTIVATE;
 }
-
-
-
-void ControlSetting::setMouse(MouseFunction MouseFunction, InputManager::InputCode mouse)
-{
-	mMouseMap[MouseFunction].second = mouse;
-}
-
-InputManager::InputCode ControlSetting::getMouse(MouseFunction MouseFunction) const
-{
-	return mMouseMap.at(MouseFunction).second;
-}
-
-QString ControlSetting::getMouseName(MouseFunction MouseFunction) const
-{
-	return mMouseMap.at(MouseFunction).first;
-}
-
-ControlSetting::MouseFunction ControlSetting::mouseBegin() const
-{
-	return ATTACK;
-}
-
-ControlSetting::MouseFunction ControlSetting::mouseEnd() const
-{
-	return DEFENSE;
-}
-
 
 bool ControlSetting::getYInverted() const
 {
-	return mYInverted;
+    return mYInverted;
 }
 
 void ControlSetting::setYInverted(bool y_inverted)
 {
-	mYInverted = y_inverted;
+    mYInverted = y_inverted;
 }
 
 
 unsigned ControlSetting::getSensitivity() const
 {
-	return mSentivity;
+    return mSentivity;
 }
 
 void ControlSetting::setSentivity(unsigned sensitivity)
 {
-	mSentivity = sensitivity;
+    mSentivity = sensitivity;
 }

@@ -6,24 +6,24 @@ using namespace std;
 class SoundSetting
 {
 public:
-	SoundSetting();
+    SoundSetting();
 
-	void setSoundEffect(unsigned sound_effect);
+    void setSoundEffect(unsigned sound_effect);
 
-	unsigned getSoundEffect() const;
+    unsigned getSoundEffect() const;
 
-	void setMusic(unsigned music);
+    void setMusic(unsigned music);
 
-	unsigned getMusic() const;
+    unsigned getMusic() const;
 
-	void setMainVolume(unsigned main_volume);
+    void setMainVolume(unsigned main_volume);
 
-	unsigned getMainVolume() const;
+    unsigned getMainVolume() const;
 
 private:
-	unsigned mSoundEffect;
-	unsigned mMusic;
-	unsigned mMainVolume;
+    unsigned mSoundEffect;
+    unsigned mMusic;
+    unsigned mMainVolume;
 };
 
 #endif

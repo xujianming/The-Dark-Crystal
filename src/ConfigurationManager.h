@@ -16,46 +16,46 @@
 class ConfigurationManager : boost::noncopyable
 {
 public:
-	static ConfigurationManager* getInstance();
+    static ConfigurationManager* getInstance();
 
-	bool loadConfig();
+    bool loadConfig();
 
-	bool saveConfig() const;
+    bool saveConfig() const;
 
-	ScreenSetting getScreenSetting() const;
+    ScreenSetting getScreenSetting() const;
 
-	void setScreenSetting(ScreenSetting screen_setting);
+    void setScreenSetting(ScreenSetting screen_setting);
 
-	SoundSetting getSoundSetting() const;
+    SoundSetting getSoundSetting() const;
 
-	void setSoundSetting(SoundSetting sound_setting); 
+    void setSoundSetting(SoundSetting sound_setting); 
 
-	ControlSetting getControlSetting() const;
+    ControlSetting getControlSetting() const;
 
-	void setControlSetting(ControlSetting control_setting);
+    void setControlSetting(ControlSetting control_setting);
 
 private:
-	void _loadSreenSetting(const QDomElement& element);
+    void __loadSreenSetting(const QDomElement& element);
 
-	QDomElement _saveScreenSetting(QDomDocument& doc) const;
+    QDomElement __saveScreenSetting(QDomDocument& doc) const;
 
-	void _loadSoundSetting(const QDomElement& element);
+    void __loadSoundSetting(const QDomElement& element);
 
-	QDomElement _saveSoundSetting(QDomDocument& doc) const;
+    QDomElement __saveSoundSetting(QDomDocument& doc) const;
 
-	void _loadControlSetting(const QDomElement& element);
+    void __loadControlSetting(const QDomElement& element);
 
-	QDomElement _saveControlSetting(QDomDocument& doc) const;
+    QDomElement __saveControlSetting(QDomDocument& doc) const;
 
-	ConfigurationManager();
+    ConfigurationManager();
 
-	static std::shared_ptr<ConfigurationManager> mInstance;
+    static std::shared_ptr<ConfigurationManager> mInstance;
 
-	ScreenSetting mScreenSetting;
+    ScreenSetting mScreenSetting;
 
-	SoundSetting mSoundSetting;
+    SoundSetting mSoundSetting;
 
-	ControlSetting mControlSetting;
+    ControlSetting mControlSetting;
 };
 
 #endif

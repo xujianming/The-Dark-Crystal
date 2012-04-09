@@ -11,68 +11,52 @@ using namespace std;
 class ControlSetting
 {
 public:
-	ControlSetting();
+    ControlSetting();
 
-	//KeySetting
-	enum KeyFunction
-	{
-		FORWARD,
-		BACKWARD,
-		LEFTWARD,
-		RIGHTWARD,
-		JUMP,
-		SPRINT,
-		SWITCH,
-		ARM1,
-		ARM2,
-		ARM3,
-		ARM4,
-		ACTIVATE
-	};
+    //KeySetting
+    enum KeyFunction
+    {
+        FORWARD,
+        BACKWARD,
+        LEFTWARD,
+        RIGHTWARD,
+        JUMP,
+        SPRINT,
+        SWITCH,
+        ARM1,
+        ARM2,
+        ARM3,
+        ARM4,
+        ATTACK,
+        DEFENSE,
+        ACTIVATE
+    };
 
-	void setKey(KeyFunction KeyFunction, InputManager::InputCode key);
+    void setKey(KeyFunction KeyFunction, InputManager::InputCode key);
 
-	InputManager::InputCode getKey(KeyFunction KeyFunction) const;
+    InputManager::InputCode getKey(KeyFunction KeyFunction) const;
 
-	QString getKeyName(KeyFunction KeyFunction) const;
+    QString getKeyName(KeyFunction KeyFunction) const;
 
-	KeyFunction keyBegin() const;
+    KeyFunction keyBegin() const;
 
-	KeyFunction keyEnd() const;
-	
-	//MouseSetting
-	enum MouseFunction
-	{
-		ATTACK,
-		DEFENSE
-	};
+    KeyFunction keyEnd() const;
 
-	void setMouse(MouseFunction MouseFunction, InputManager::InputCode mouse);
+    //YInvertedSetting
+    bool getYInverted() const;
 
-	InputManager::InputCode getMouse(MouseFunction MouseFunction) const;
+    void setYInverted(bool y_inverted);
 
-	QString getMouseName(MouseFunction MouseFunction) const;
+    //SensitivitySetting
+    unsigned getSensitivity() const;
 
-	MouseFunction mouseBegin() const;
-
-	MouseFunction mouseEnd() const;
-
-	//YInvertedSetting
-	bool getYInverted() const;
-
-	void setYInverted(bool y_inverted);
-
-	//SensitivitySetting
-	unsigned getSensitivity() const;
-
-	void setSentivity(unsigned sensitivity);
+    void setSentivity(unsigned sensitivity);
 
 
 private:
-	map<KeyFunction, pair<QString, InputManager::InputCode>> mKeyMap;
-	map<MouseFunction, pair<QString, InputManager::InputCode>> mMouseMap;
-	bool mYInverted;
-	unsigned mSentivity;
+    map<KeyFunction, pair<QString, InputManager::InputCode>> mKeyMap;
+    bool mYInverted;
+    unsigned mSentivity;
 };
 
 #endif
