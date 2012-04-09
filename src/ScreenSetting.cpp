@@ -2,8 +2,8 @@
 
 ScreenSetting::ScreenSetting()
 {
-	mResolution.width = 1280;
-	mResolution.height = 800;
+	mResolution.width = 1024;
+	mResolution.height = 768;
 }
 
 unsigned ScreenSetting::getResolutionWidth() const

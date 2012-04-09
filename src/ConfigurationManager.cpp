@@ -50,33 +50,17 @@ bool ConfigurationManager::loadConfig()
         {
             QString tag_name = config_node.tagName();
 
-            if(tag_name == KEY_SETTINGS)
-            {
-                __loadKeySettings(config_node);
-            }
-			else if (tag_name == MUSIC_SETTING)
-			{
-				_loadMouseSetting(config_node);
-			}
-			else if (tag_name == SCREEN_SETTING)
+  			if (tag_name == SCREEN_SETTING)
 			{
 				_loadSreenSetting(config_node);
 			}
-			else if (tag_name == Y_INVERTED_SETTING)
+			else if (tag_name == SOUND_SETTING)
 			{
-				_loadYInvertedSetting(config_node);
+				_loadSoundSetting(config_node);
 			}
-			else if(tag_name == SOUND_EFFECT_SETTING)
+			else if (tag_name == CONTROL_SETTING)
 			{
-				_loadSoundEffectSetting(config_node);
-			}
-			else if (tag_name == SENSITIVITY_SETTING)
-			{
-				_loadSensitivitySetting(config_node);
-			}
-			else if (tag_name == MOUSE_SETTING)
-			{
-				_loadMouseSetting(config_node);
+				_loadControlSetting(config_node);
 			}
         }
     }
@@ -108,14 +92,9 @@ bool ConfigurationManager::saveConfig() const
 
 	// Only saves the key settings for now.
 	// TODO: Add other saving stuff here.
-	root.appendChild(__saveKeySettings(doc));
-	root.appendChild(_saveMusicSetting(doc));
 	root.appendChild(_saveScreenSetting(doc));
-	root.appendChild(_saveYInvertedSetting(doc));
-	root.appendChild(_saveSoundEffectSetting(doc));
-	root.appendChild(_saveSensitivitySetting(doc));
-	root.appendChild(_saveMouseSetting(doc));
-
+	root.appendChild(_saveSoundSetting(doc));
+	root.appendChild(_saveControlSetting(doc));
 	// Save it to the file.
 	QTextStream out(&config_file);
 	out << doc.toString();
@@ -124,66 +103,6 @@ bool ConfigurationManager::saveConfig() const
 	config_file.close();
 
 	return true;
-}
-
-KeySettings ConfigurationManager::getKeySettings() const
-{
-    return mKeySettings;
-}
-
-void ConfigurationManager::setKeySettings(KeySettings key_settings)
-{
-    mKeySettings = key_settings;
-}
-
-MusicSetting ConfigurationManager::getMusicSetting() const
-{
-	return mMusicSetting;
-}
-
-void ConfigurationManager::setMusicSetting(MusicSetting Music_setting)
-{
-	mMusicSetting = Music_setting;
-}
-
-YInvertedSetting ConfigurationManager::getYInvertedSetting() const
-{
-	return mYInvertedSetting;
-}
-
-void ConfigurationManager::setYInvertedSetting(YInvertedSetting set_y_inverted_setting)
-{
-	mYInvertedSetting = set_y_inverted_setting;
-}
-
-SoundEffectSetting ConfigurationManager::getSoundEffectSetting() const
-{
-	return mSoundEffectSetting;
-}
-
-void ConfigurationManager::setSoundEffectSetting(SoundEffectSetting sound_effect_setting)
-{
-	mSoundEffectSetting = sound_effect_setting;
-}
-
-SensitivitySetting ConfigurationManager::getSensitivitySetting() const
-{
-	return mSensitivitySetting;
-}
-
-void ConfigurationManager::setSensitivitySetting(SensitivitySetting sensitivity_setting)
-{
-	mSensitivitySetting = sensitivity_setting;
-}
-
-MouseSetting ConfigurationManager::getMouseSetting() const
-{
-	return mMouseSetting;
-}
-
-void ConfigurationManager::setMouseSetting(MouseSetting mouse_setting) 
-{
-	mMouseSetting = mouse_setting;
 }
 
 ScreenSetting ConfigurationManager::getScreenSetting() const
@@ -196,139 +115,24 @@ void ConfigurationManager::setScreenSetting(ScreenSetting screen_setting)
 	mScreenSetting = screen_setting;
 }
 
-void ConfigurationManager::__loadKeySettings(const QDomElement& element)
+SoundSetting ConfigurationManager::getSoundSetting() const
 {
-    for(auto key_node = element.firstChildElement() ; !key_node.isNull() ; key_node = key_node.nextSiblingElement())
-    {
-        KeySettings::Function function_code = (KeySettings::Function)key_node.attribute(KEY_FUNCTION).toUInt();
-        InputManager::InputCode input_code = (InputManager::InputCode)key_node.attribute(KEY_CODE).toUInt();
-
-        mKeySettings.setKey(function_code, input_code);
-    }
+	return mSoundSetting;
 }
 
-QDomElement ConfigurationManager::__saveKeySettings(QDomDocument& doc) const
+void ConfigurationManager::setSoundSetting(SoundSetting sound_setting)
 {
-    auto key_settings = doc.createElement(KEY_SETTINGS);
-
-    for(unsigned function = (unsigned)mKeySettings.begin() ; function <= (unsigned)mKeySettings.end() ; ++function)
-    {
-        auto element = doc.createElement(mKeySettings.getName((KeySettings::Function)function));
-        
-        element.setAttribute(KEY_FUNCTION, function);
-        element.setAttribute(KEY_CODE, (unsigned)mKeySettings.getKey((KeySettings::Function)function));
-        
-        key_settings.appendChild(element);
-    }
-
-    return key_settings;
+	mSoundSetting = sound_setting;
 }
 
-void ConfigurationManager::_loadMusicSetting(const QDomElement& element)
+ControlSetting ConfigurationManager::getControlSetting() const
 {
-	auto music_node = element.firstChildElement();
-	unsigned music_value = music_node.attribute(MUSIC_VALUE).toUInt();
-
-	mMusicSetting.setMusic(music_value);
+	return mControlSetting;
 }
 
-QDomElement ConfigurationManager::_saveMusicSetting(QDomDocument& doc) const
+void ConfigurationManager::setControlSetting(ControlSetting control_setting)
 {
-	auto music_setting = doc.createElement(MUSIC_SETTING);
-
-	auto element = doc.createElement(MUSIC);
-	element.setAttribute(MUSIC_VALUE,mMusicSetting.getMusic());
-
-	music_setting.appendChild(element);
-
-	return music_setting;
-}
-
-void ConfigurationManager::_loadYInvertedSetting(const QDomElement& element)
-{
-	auto y_inverted_node = element.firstChildElement();
-	bool y_inverted_value = y_inverted_node.attribute(VALUE).toUInt();
-
-	mYInvertedSetting.setYInverted(y_inverted_value);
-}
-
-QDomElement ConfigurationManager::_saveYInvertedSetting(QDomDocument &doc) const
-{
-	auto y_inverted_setting = doc.createElement(Y_INVERTED_SETTING);
-
-	auto element = doc.createElement(Y_INVERTED);
-	element.setAttribute(VALUE,mYInvertedSetting.getYInverted());
-
-	y_inverted_setting.appendChild(element);
-
-	return y_inverted_setting;
-}
-
-void ConfigurationManager::_loadSoundEffectSetting(const QDomElement& element)
-{
-	auto sound_effect_node = element.firstChildElement();
-	unsigned sound_effect_value = sound_effect_node.attribute(SOUND_EFFECT_VALUE).toUInt();
-
-	mSoundEffectSetting.setSoundEffect(sound_effect_value);
-}
-
-QDomElement ConfigurationManager::_saveSoundEffectSetting(QDomDocument &doc) const
-{
-	auto sound_effect_setting = doc.createElement(SOUND_EFFECT_SETTING);
-
-	auto element = doc.createElement(SOUND_EFFECT);
-	element.setAttribute(SOUND_EFFECT_VALUE,mSoundEffectSetting.getSoundEffect());
-
-	sound_effect_setting.appendChild(element);
-
-	return sound_effect_setting;
-}
-
-void ConfigurationManager::_loadSensitivitySetting(const QDomElement& element)
-{
-	auto sensitivity_node = element.firstChildElement();
-	unsigned sensitivity_value = sensitivity_node.attribute(SENSITIVITY_VALUE).toUInt();
-
-	mSensitivitySetting.setSentivity(sensitivity_value);
-}
-
-QDomElement ConfigurationManager::_saveSensitivitySetting(QDomDocument& doc) const
-{
-	auto sensitivity_effect_setting = doc.createElement(SENSITIVITY_SETTING);
-	auto element = doc.createElement(SENSITIVITY);
-	element.setAttribute(SENSITIVITY_VALUE,mSensitivitySetting.getSensitivity());
-
-	sensitivity_effect_setting.appendChild(element);
-
-	return sensitivity_effect_setting;
-}
-
-void ConfigurationManager::_loadMouseSetting(const QDomElement& element)
-{
-	for(auto mouse_node = element.firstChildElement() ; !mouse_node.isNull() ; mouse_node = mouse_node.nextSiblingElement())
-	{
-		MouseSetting::Function function_code = (MouseSetting::Function)mouse_node.attribute(MOUSE_FUNCTION).toUInt();
-		InputManager::InputCode input_code = (InputManager::InputCode)mouse_node.attribute(MOUSE_CODE).toUInt();
-
-		mMouseSetting.setMouse(function_code, input_code);
-	}
-}
-
-QDomElement ConfigurationManager::_saveMouseSetting(QDomDocument& doc) const
-{
-	auto mouse_setting = doc.createElement(MOUSE_SETTING);
-
-	for(unsigned function = (unsigned)mMouseSetting.begin() ; function <= (unsigned)mMouseSetting.end() ; ++function)
-	{
-		auto element = doc.createElement(mMouseSetting.getName((MouseSetting::Function)function));
-
-		element.setAttribute(MOUSE_FUNCTION, function);
-		element.setAttribute(MOUSE_CODE, (unsigned)mMouseSetting.getMouse((MouseSetting::Function)function));
-
-		mouse_setting.appendChild(element);
-	}
-
-	return mouse_setting;
+	mControlSetting = control_setting;
 }
 
 void ConfigurationManager::_loadSreenSetting(const QDomElement& element)
@@ -344,8 +148,113 @@ QDomElement ConfigurationManager::_saveScreenSetting(QDomDocument& doc) const
 {
 	auto screen_setting = doc.createElement(SCREEN_SETTING);
 	auto resolution = doc.createElement(RESOLUTION);
-	resolution.setAttribute(WIDTH,mScreenSetting.getResolutionWidth());
-	resolution.setAttribute(HEIGHT,mScreenSetting.getResolutionHeight());
+	resolution.setAttribute(WIDTH, mScreenSetting.getResolutionWidth());
+	resolution.setAttribute(HEIGHT, mScreenSetting.getResolutionHeight());
 	screen_setting.appendChild(resolution);
 	return screen_setting;
+}
+
+void ConfigurationManager::_loadSoundSetting(const QDomElement& element)
+{
+	auto sound_effect_node = element.firstChildElement(SOUND_EFFECT);
+	unsigned sound_effect_value = sound_effect_node.attribute(VALUE).toUInt();
+	mSoundSetting.setSoundEffect(sound_effect_value);
+
+	auto music_node = element.firstChildElement(MUSIC);
+	unsigned music_value = music_node.attribute(VALUE).toUInt();
+	mSoundSetting.setMusic(music_value);
+
+	auto main_volume_node = element.firstChildElement(MAIN_VOLUME);
+	unsigned main_volume_value = main_volume_node.attribute(VALUE).toUInt();
+	mSoundSetting.setMainVolume(main_volume_value);
+}
+
+QDomElement ConfigurationManager::_saveSoundSetting(QDomDocument& doc) const
+{
+	auto sound_setting = doc.createElement(SOUND_SETTING);
+
+	auto sound_effect_setting = doc.createElement(SOUND_EFFECT);
+	sound_effect_setting.setAttribute(VALUE, mSoundSetting.getSoundEffect());
+	sound_setting.appendChild(sound_effect_setting);
+
+	auto music_setting = doc.createElement(MUSIC);
+	music_setting.setAttribute(VALUE, mSoundSetting.getMusic());
+	sound_setting.appendChild(music_setting);
+
+	auto main_volume_setting = doc.createElement(MAIN_VOLUME);
+	main_volume_setting.setAttribute(VALUE, mSoundSetting.getMainVolume());
+	sound_setting.appendChild(main_volume_setting);
+
+	return sound_setting;
+}
+
+void ConfigurationManager::_loadControlSetting(const QDomElement& element)
+{
+	auto key_setting = element.firstChildElement(KEY);
+	for(auto key_node = key_setting.firstChildElement() ; !key_node.isNull() ; key_node = key_node.nextSiblingElement())
+	{
+		ControlSetting::KeyFunction function_code = (ControlSetting::KeyFunction)key_node.attribute(KEY_FUNCTION).toUInt();
+		InputManager::InputCode input_code = (InputManager::InputCode)key_node.attribute(KEY_CODE).toUInt();
+
+		mControlSetting.setKey(function_code, input_code);
+	}
+
+	auto mouse_setting = element.firstChildElement(MOUSE);
+	for(auto mouse_node = mouse_setting.firstChildElement() ; !mouse_node.isNull() ; mouse_node = mouse_node.nextSiblingElement())
+	{
+		ControlSetting::MouseFunction function_code = (ControlSetting::MouseFunction)mouse_node.attribute(MOUSE_FUNCTION).toUInt();
+		InputManager::InputCode input_code = (InputManager::InputCode)mouse_node.attribute(MOUSE_CODE).toUInt();
+
+		mControlSetting.setMouse(function_code, input_code);
+	}
+
+	auto y_inverted_setting = element.firstChildElement(Y_INVERTED);
+	bool y_inverted_value = y_inverted_setting.attribute(VALUE).toUInt();
+	mControlSetting.setYInverted(y_inverted_value);
+
+	auto sensitivity_setting = element.firstChildElement(SENSITIVITY);
+	unsigned sensitivity_value = sensitivity_setting.attribute(VALUE).toUInt();
+	mControlSetting.setSentivity(sensitivity_value);
+
+}
+
+QDomElement ConfigurationManager::_saveControlSetting(QDomDocument& doc) const
+{
+	auto control_setting = doc.createElement(CONTROL_SETTING);
+
+	auto key_setting = doc.createElement(KEY);
+	for(unsigned key_function = (unsigned)mControlSetting.keyBegin() ; key_function <= (unsigned)mControlSetting.keyEnd(); ++key_function)
+	{
+		auto element = doc.createElement(mControlSetting.getKeyName((ControlSetting::KeyFunction)key_function));
+
+		element.setAttribute(KEY_FUNCTION, key_function);
+		element.setAttribute(KEY_CODE, (unsigned)mControlSetting.getKey((ControlSetting::KeyFunction)key_function));
+
+		key_setting.appendChild(element);
+	}
+	control_setting.appendChild(key_setting);
+
+	auto mouse_setting = doc.createElement(MOUSE);
+	for(unsigned mouse_function = (unsigned)mControlSetting.mouseBegin() ; mouse_function <= (unsigned)mControlSetting.mouseEnd() ; ++mouse_function)
+	{
+		auto element = doc.createElement(mControlSetting.getMouseName((ControlSetting::MouseFunction)mouse_function));
+
+		element.setAttribute(MOUSE_FUNCTION, mouse_function);
+		element.setAttribute(MOUSE_CODE, (unsigned)mControlSetting.getMouse((ControlSetting::MouseFunction)mouse_function));
+
+		mouse_setting.appendChild(element);
+	}
+	control_setting.appendChild(mouse_setting);
+
+	auto YInverted_setting = doc.createElement(Y_INVERTED);
+	YInverted_setting.setAttribute(VALUE,mControlSetting.getYInverted());
+	control_setting.appendChild(YInverted_setting);
+
+	auto sensitivity_setting = doc.createElement(SENSITIVITY);
+	sensitivity_setting.setAttribute(VALUE,mControlSetting.getSensitivity());
+	control_setting.appendChild(sensitivity_setting);
+	
+	return control_setting;
+
+	
 }
