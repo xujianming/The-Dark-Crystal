@@ -23,17 +23,17 @@ bool ConfigurationManager::loadConfig()
     // If the file doesn't exist...
     if(!config_file.open(QIODevice::ReadOnly))
     {
-        Logger::Get().Info("The configuration file doesn't exist. Trying to create a new one.");
-        
+        Logger::get().info("The configuration file doesn't exist. Trying to create a new one.");
+
         if(!saveConfig())
         {
-            Logger::Get().Error("Failed to open the configuration file.");
+            Logger::get().error("Failed to open the configuration file.");
 
             return false;
         }
         else
         {
-            Logger::Get().Info("Created a new configuration file.");
+            Logger::get().info("Created a new configuration file.");
 
             return true;
         }
@@ -50,30 +50,28 @@ bool ConfigurationManager::loadConfig()
         {
             QString tag_name = config_node.tagName();
 
-            if(tag_name == KEY_SETTINGS)
+            if (tag_name == SCREEN_SETTING)
             {
-                __loadKeySettings(config_node);
+                __loadSreenSetting(config_node);
+            }
+            else if (tag_name == SOUND_SETTING)
+            {
+                __loadSoundSetting(config_node);
+            }
+            else if (tag_name == CONTROL_SETTING)
+            {
+                __loadControlSetting(config_node);
             }
         }
     }
     else
     {
-        Logger::Get().Error("Failed to read from the configuration file.");
+        Logger::get().error("Failed to read from the configuration file.");
 
         return false;
     }
 
     return true;
-}
-
-KeySettings ConfigurationManager::getKeySettings() const
-{
-    return mKeySettings;
-}
-
-void ConfigurationManager::setKeySettings(KeySettings key_settings)
-{
-    mKeySettings = key_settings;
 }
 
 bool ConfigurationManager::saveConfig() const
@@ -83,8 +81,8 @@ bool ConfigurationManager::saveConfig() const
 
     if(!config_file.open(QIODevice::WriteOnly))
     {
-        Logger::Get().Error("Cannot create the configuration file.");
-        
+        Logger::get().error("Cannot create the configuration file.");
+
         return false;
     }
 
@@ -94,8 +92,9 @@ bool ConfigurationManager::saveConfig() const
 
     // Only saves the key settings for now.
     // TODO: Add other saving stuff here.
-    root.appendChild(__saveKeySettings(doc));
-
+    root.appendChild(__saveScreenSetting(doc));
+    root.appendChild(__saveSoundSetting(doc));
+    root.appendChild(__saveControlSetting(doc));
     // Save it to the file.
     QTextStream out(&config_file);
     out << doc.toString();
@@ -106,30 +105,135 @@ bool ConfigurationManager::saveConfig() const
     return true;
 }
 
-void ConfigurationManager::__loadKeySettings(const QDomElement& element)
+ScreenSetting ConfigurationManager::getScreenSetting() const
 {
-    for(auto key_node = element.firstChildElement() ; !key_node.isNull() ; key_node = key_node.nextSiblingElement())
-    {
-        KeySettings::Function function_code = (KeySettings::Function)key_node.attribute(KEY_FUNCTION).toUInt();
-        InputManager::InputCode input_code = (InputManager::InputCode)key_node.attribute(KEY_CODE).toUInt();
-
-        mKeySettings.SetKey(function_code, input_code);
-    }
+    return mScreenSetting;
 }
 
-QDomElement ConfigurationManager::__saveKeySettings(QDomDocument& doc) const
+void ConfigurationManager::setScreenSetting(ScreenSetting screen_setting)
 {
-    auto key_settings = doc.createElement(KEY_SETTINGS);
+    mScreenSetting = screen_setting;
+}
 
-    for(unsigned function = (unsigned)mKeySettings.Begin() ; function <= (unsigned)mKeySettings.End() ; ++function)
+SoundSetting ConfigurationManager::getSoundSetting() const
+{
+    return mSoundSetting;
+}
+
+void ConfigurationManager::setSoundSetting(SoundSetting sound_setting)
+{
+    mSoundSetting = sound_setting;
+}
+
+ControlSetting ConfigurationManager::getControlSetting() const
+{
+    return mControlSetting;
+}
+
+void ConfigurationManager::setControlSetting(ControlSetting control_setting)
+{
+    mControlSetting = control_setting;
+}
+
+void ConfigurationManager::__loadSreenSetting(const QDomElement& element)
+{
+    auto resolution_node = element.firstChildElement(RESOLUTION);
+    unsigned width_value = resolution_node.attribute(WIDTH).toUInt();
+    unsigned height_value = resolution_node.attribute(HEIGHT).toUInt();
+    mScreenSetting.setResolutionWidth(width_value);
+    mScreenSetting.setResolutionHeight(height_value);
+}
+
+QDomElement ConfigurationManager::__saveScreenSetting(QDomDocument& doc) const
+{
+    auto screen_setting = doc.createElement(SCREEN_SETTING);
+    auto resolution = doc.createElement(RESOLUTION);
+    resolution.setAttribute(WIDTH, mScreenSetting.getResolutionWidth());
+    resolution.setAttribute(HEIGHT, mScreenSetting.getResolutionHeight());
+    screen_setting.appendChild(resolution);
+    return screen_setting;
+}
+
+void ConfigurationManager::__loadSoundSetting(const QDomElement& element)
+{
+    auto sound_effect_node = element.firstChildElement(SOUND_EFFECT);
+    unsigned sound_effect_value = sound_effect_node.attribute(VALUE).toUInt();
+    mSoundSetting.setSoundEffect(sound_effect_value);
+
+    auto music_node = element.firstChildElement(MUSIC);
+    unsigned music_value = music_node.attribute(VALUE).toUInt();
+    mSoundSetting.setMusic(music_value);
+
+    auto main_volume_node = element.firstChildElement(MAIN_VOLUME);
+    unsigned main_volume_value = main_volume_node.attribute(VALUE).toUInt();
+    mSoundSetting.setMainVolume(main_volume_value);
+}
+
+QDomElement ConfigurationManager::__saveSoundSetting(QDomDocument& doc) const
+{
+    auto sound_setting = doc.createElement(SOUND_SETTING);
+
+    auto sound_effect_setting = doc.createElement(SOUND_EFFECT);
+    sound_effect_setting.setAttribute(VALUE, mSoundSetting.getSoundEffect());
+    sound_setting.appendChild(sound_effect_setting);
+
+    auto music_setting = doc.createElement(MUSIC);
+    music_setting.setAttribute(VALUE, mSoundSetting.getMusic());
+    sound_setting.appendChild(music_setting);
+
+    auto main_volume_setting = doc.createElement(MAIN_VOLUME);
+    main_volume_setting.setAttribute(VALUE, mSoundSetting.getMainVolume());
+    sound_setting.appendChild(main_volume_setting);
+
+    return sound_setting;
+}
+
+void ConfigurationManager::__loadControlSetting(const QDomElement& element)
+{
+    auto key_setting = element.firstChildElement(KEY);
+    for(auto key_node = key_setting.firstChildElement() ; !key_node.isNull() ; key_node = key_node.nextSiblingElement())
     {
-        auto element = doc.createElement(mKeySettings.GetName((KeySettings::Function)function));
-        
-        element.setAttribute(KEY_FUNCTION, function);
-        element.setAttribute(KEY_CODE, (unsigned)mKeySettings.GetKey((KeySettings::Function)function));
-        
-        key_settings.appendChild(element);
+        ControlSetting::KeyFunction function_code = (ControlSetting::KeyFunction)key_node.attribute(KEY_FUNCTION).toUInt();
+        InputManager::InputCode input_code = (InputManager::InputCode)key_node.attribute(KEY_CODE).toUInt();
+
+        mControlSetting.setKey(function_code, input_code);
     }
 
-    return key_settings;
+    auto y_inverted_setting = element.firstChildElement(Y_INVERTED);
+    bool y_inverted_value = y_inverted_setting.attribute(VALUE).toUInt();
+    mControlSetting.setYInverted(y_inverted_value);
+
+    auto sensitivity_setting = element.firstChildElement(SENSITIVITY);
+    unsigned sensitivity_value = sensitivity_setting.attribute(VALUE).toUInt();
+    mControlSetting.setSentivity(sensitivity_value);
+
+}
+
+QDomElement ConfigurationManager::__saveControlSetting(QDomDocument& doc) const
+{
+    auto control_setting = doc.createElement(CONTROL_SETTING);
+
+    auto key_setting = doc.createElement(KEY);
+    for(unsigned key_function = (unsigned)mControlSetting.keyBegin() ; key_function <= (unsigned)mControlSetting.keyEnd(); ++key_function)
+    {
+        auto element = doc.createElement(mControlSetting.getKeyName((ControlSetting::KeyFunction)key_function));
+
+        element.setAttribute(KEY_FUNCTION, key_function);
+        element.setAttribute(KEY_CODE, (unsigned)mControlSetting.getKey((ControlSetting::KeyFunction)key_function));
+
+        key_setting.appendChild(element);
+    }
+    control_setting.appendChild(key_setting);
+
+    auto YInverted_setting = doc.createElement(Y_INVERTED);
+    YInverted_setting.setAttribute(VALUE,mControlSetting.getYInverted());
+    control_setting.appendChild(YInverted_setting);
+
+    auto sensitivity_setting = doc.createElement(SENSITIVITY);
+    sensitivity_setting.setAttribute(VALUE,mControlSetting.getSensitivity());
+    control_setting.appendChild(sensitivity_setting);
+
+    return control_setting;
+
+
 }

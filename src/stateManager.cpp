@@ -10,7 +10,7 @@ NewStateManager::push(StateName stateName) {
 			break; 
 		}
 		if (res != NULL)
-		dt::Root::GetInstance().GetStateManager()->SetNewState(res); 
+		dt::Root::getInstance().getStateManager()->setNewState(res); 
 }
 NewStateManager & 
 NewStateManager::getInstance() {
@@ -21,5 +21,5 @@ NewStateManager::getInstance() {
 
 void
 NewStateManager::pop(uint16_t count) {
-	dt::Root::GetInstance().GetStateManager()->Pop();
+	dt::Root::getInstance().getStateManager()->pop();
 }
