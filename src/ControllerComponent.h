@@ -77,6 +77,7 @@ signals:
     void sRightward(bool is_pressed);
     void sAttack(bool is_pressed);
     void sJump(bool is_pressed);
+    void sActivate(bool is_pressed);
     void sSwitchWeapon(uint32_t weapon_index);
     void sQuickSwitch();
     void sDefend(bool is_pressed);

@@ -199,29 +199,79 @@ void ControllerComponent::__onButtonDown(dt::InputManager::InputCode input_code,
     dt::InputManager::InputCode leftward = control_setting.getKey(ControlSetting::LEFTWARD);
     dt::InputManager::InputCode rightward = control_setting.getKey(ControlSetting::RIGHTWARD);
     dt::InputManager::InputCode jump = control_setting.getKey(ControlSetting::JUMP);
+    dt::InputManager::InputCode attack = control_setting.getKey(ControlSetting::ATTACK);
+    dt::InputManager::InputCode defend = control_setting.getKey(ControlSetting::DEFENSE);
+    dt::InputManager::InputCode activate = control_setting.getKey(ControlSetting::ACTIVATE);
+    dt::InputManager::InputCode arm1 = control_setting.getKey(ControlSetting::ARM1);
+    dt::InputManager::InputCode arm2 = control_setting.getKey(ControlSetting::ARM2);
+    dt::InputManager::InputCode arm3 = control_setting.getKey(ControlSetting::ARM3);
+    dt::InputManager::InputCode arm4 = control_setting.getKey(ControlSetting::ARM4);
+    dt::InputManager::InputCode dash = control_setting.getKey(ControlSetting::SPRINT);
+    dt::InputManager::InputCode quick_switch = control_setting.getKey(ControlSetting::SWITCH);
 
-    if(input_code == forward) {
+    if(input_code == forward)
+    {
         mMove.setZ(mMove.getZ() - 1.0f);
 
         emit sForward(true);
     }
-    if(input_code == backward) {
+    else if(input_code == backward)
+    {
         mMove.setZ(mMove.getZ() + 1.0f);
 
         emit sBackward(true);
     }
-    if(input_code == leftward) {
+    else if(input_code == leftward)
+    {
         mMove.setX(mMove.getX() - 1.0f);
 
         emit sLeftward(true);
     }
-    if(input_code == rightward) {
+    else if(input_code == rightward)
+    {
         mMove.setX(mMove.getX() + 1.0f);
 
         emit sRightward(true);
     }
+    else if(input_code == attack)
+    {
+        emit sAttack(true);
+    }
+    else if(input_code == defend)
+    {
+        emit sDefend(true);
+    }
+    else if(input_code == activate)
+    {
+        emit sActivate(true);
+    }
+    else if(input_code == arm1)
+    {
+        emit sSwitchWeapon(1);
+    }
+    else if(input_code == arm2)
+    {
+        emit sSwitchWeapon(2);
+    }
+    else if(input_code == arm3)
+    {
+        emit sSwitchWeapon(3);
+    }
+    else if(input_code == arm4)
+    {
+        emit sSwitchWeapon(4);
+    }
+    else if(input_code == quick_switch)
+    {
+        emit sQuickSwitch();
+    }
+    else if(input_code == dash)
+    {
+        emit sDash(true);
+    }
 
-    if(input_code == jump && mBtController->onGround()) {
+    if(input_code == jump && mBtController->onGround())
+    {
         mBtController->jump();
 
         emit sJump(true);
@@ -269,17 +319,37 @@ void ControllerComponent::__onButtonUp(dt::InputManager::InputCode input_code, c
     dt::InputManager::InputCode backward = control_setting.getKey(ControlSetting::BACKWARD);
     dt::InputManager::InputCode leftward = control_setting.getKey(ControlSetting::LEFTWARD);
     dt::InputManager::InputCode rightward = control_setting.getKey(ControlSetting::RIGHTWARD);
+    dt::InputManager::InputCode attack = control_setting.getKey(ControlSetting::ATTACK);
+    dt::InputManager::InputCode defend = control_setting.getKey(ControlSetting::DEFENSE);
+    dt::InputManager::InputCode activate = control_setting.getKey(ControlSetting::ACTIVATE);
+    dt::InputManager::InputCode dash = control_setting.getKey(ControlSetting::SPRINT);
 
     if(input_code == forward) {
         mMove.setZ(mMove.getZ() + 1.0f);
     }
-    if(input_code == backward) {
+    else if(input_code == backward) {
         mMove.setZ(mMove.getZ() - 1.0f);
     }
-    if(input_code == leftward) {
+    else if(input_code == leftward) {
         mMove.setX(mMove.getX() + 1.0f);
     }
-    if(input_code == rightward) {
+    else if(input_code == rightward) {
         mMove.setX(mMove.getX() - 1.0f);
+    }
+    else if(input_code == attack)
+    {
+        emit sAttack(false);
+    }
+    else if(input_code == defend)
+    {
+        emit sDefend(false);
+    }
+    else if(input_code == activate)
+    {
+        emit sActivate(false);
+    }
+    else if(input_code == dash)
+    {
+        emit sDash(false);
     }
 }
